@@ -2,12 +2,8 @@ module ETLTester
 
 	module Util
 		
-		module DBConnection
+		module
 		
-		
-		
-		
-		end		
 		
 	end
 	
