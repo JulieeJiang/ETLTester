@@ -1,0 +1,6 @@
+v0.0
+First draft.
+
+v0.1
+Add Class column.
+rewrite class Table.
