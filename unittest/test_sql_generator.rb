@@ -27,10 +27,10 @@ mapping("test") do
 		end
 	end
 	s2.ccc
-	#~ m t.ddd do
-		#~ s1.inner_join s2, "s1.abc = s2.abc"
-		#~ s2.ddd
-	#~ end
+	m t.ddd do
+		s1.inner_join s2, "s1.abc = s2.abc"
+		s2.ddd
+	end
 	m t.ccc do
 		s1.inner_join s3, "s1.asd = s3.asd"
 		s3.ccc

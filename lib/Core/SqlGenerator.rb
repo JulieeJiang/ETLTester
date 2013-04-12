@@ -21,7 +21,11 @@ module ETLTester
 						@from[alias_name] = [@from[alias_name][0], join_details]
 					else
 						if !@from[alias_name][1].nil? && !join_details.nil?
-							raise SqlGeneratorError.new("Invalid Join: #{table_name} #{alias_name}")
+							if join_details == @from[alias_name][1]
+								# Do Nothing.
+							else
+								raise SqlGeneratorError.new("Invalid Join: #{table_name} #{alias_name}")
+							end
 						end
 					end
 				end
