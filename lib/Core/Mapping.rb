@@ -42,7 +42,7 @@ module ETLTester
 						
 					end
 				else
-					raise "Usage of m: m <target column>, <source column> or m <target column>, <block of source logic>"
+					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source logic>")
 				end
 			end
 		

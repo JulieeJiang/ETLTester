@@ -1,7 +1,5 @@
-require '../lib/core/mapping'
-require '../lib/core/table'
-require '../lib/core/sqlgenerator'
-require '../lib/core/column'
+require '../lib/etltester'
+
 
 
 mapping("test") do

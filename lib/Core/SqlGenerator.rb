@@ -52,9 +52,6 @@ module ETLTester
 		
 		end
 	
-		class SqlGeneratorError < Exception
-		end
-	
 	end
 
 end

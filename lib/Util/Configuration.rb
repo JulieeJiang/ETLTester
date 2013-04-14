@@ -3,25 +3,31 @@ module ETLTester
 	module Util
 	
 		module Configuration
+			
 			require 'yaml'
 			def self.set_project_path path
 				@@project_path = path
 			end
 			
-			def self.load_config config_item
-				
+			def self.load_config config_name
+				@@configuration[config_name]
 			end
-			
-			def self.get_configuration
-				File.open("#{@@project_path}/configuration/config.yaml", 'a') do |f|
-					#@@configuration = YAML
+
+			def self.set_config config_name, config_body
+				@@configuration[config_name] = config_body
+				File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
+					f.puts @@configuration.to_yaml
 				end
 			end
 			
+			private
+			def self.get_configuration
+				File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
+					@@configuration = YAML::load(f)
+				end
+			end
 			
 		end
-		Configuration.set_project_path 'C:\Users\zhangkan\Documents\GitHub\ETLTester\unittest\test project'
-		Configuration.get_configuration
 	
 	end
 
