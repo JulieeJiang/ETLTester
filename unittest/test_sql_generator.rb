@@ -7,7 +7,7 @@ mapping("test") do
 	# declare used table
 	declare_source_table('source1', 's1')
 	declare_source_table('source2', 's2')	
-	declare_source_table('source3', 's3')	
+	declare_source_table('select * from source3', 's3')	
 	
 	declare_target_table('target', 't')
 

@@ -15,9 +15,12 @@ module ETLTester
 			end
 			
 			def declare_source_table table_name, alias_name
+				if(table_name.downcase.include?("select") && table_name.downcase.include?("from"))
+					table_name = "(#{table_name})"
+				end
 				t = Table.new(table_name, alias_name, @source_sql_generator)
 				(class << self; self; end).class_eval do
-					define_method alias_name.to_sym do
+					define_method alias_name.downcase.to_sym do
 						t
 					end
 				end
@@ -26,7 +29,7 @@ module ETLTester
 			def declare_target_table table_name, alias_name
 				t = Table.new(table_name, alias_name, @target_sql_generator)
 				(class << self; self; end).class_eval do
-					define_method alias_name.to_sym do
+					define_method alias_name.downcase.to_sym do
 						t
 					end
 				end
