@@ -33,10 +33,10 @@ module ETLTester
 			def method_missing method_name, *args, &blk			
 				if args.size == 0 && !block_given?
 					new_column = Column.new(self, method_name.to_s)
+					@sql_generator.add_select new_column
+					@sql_generator.add_table @table_name, @alias_name
 					(class << self; self; end).class_eval do
 						define_method method_name do
-							@sql_generator.add_select "#{@alias_name}.#{method_name.to_s}"
-							@sql_generator.add_table @table_name, @alias_name
 							new_column
 						end
 					end

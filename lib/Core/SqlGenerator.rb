@@ -4,13 +4,15 @@ module ETLTester
 	
 		class SqlGenerator
 		
+			attr_reader :select
+
 			def initialize
 				@select = []
 				@from = {}
 			end
 			
-			def add_select s
-				@select << s
+			def add_select column
+				@select << column
 			end
 			
 			def add_table table_name, alias_name, join_details = nil
@@ -33,11 +35,11 @@ module ETLTester
 			
 			def generate_sql
 				sql_txt = "Select\n\t"
-				sql_txt = "#{sql_txt}#{@select.join("\n\t, ")}\nFrom\n\t"
+				sql_txt = "#{sql_txt}#{@select.collect {|col| "#{col.table.alias_name}.#{col.column_name}"}.join("\n\t, ")}\nFrom\n\t"
 				first_line = ''
 				lines = []
 				@from.each do |k, v|
-					if v[1].nil?
+					if v[1].nil?	# v[0] is table name, v[1] is join_details.
 						if first_line == ''
 							first_line = "#{v[0]} #{k}\n"
 						else

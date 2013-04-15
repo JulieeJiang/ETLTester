@@ -4,6 +4,8 @@ module ETLTester
 		
 		class Column
 			
+			attr_reader :table, :column_name
+
 			def initialize table, column_name
 				@table, @column_name = table, column_name
 			end

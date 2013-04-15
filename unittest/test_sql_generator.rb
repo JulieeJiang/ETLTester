@@ -16,6 +16,7 @@ mapping("test") do
 	m t.abc, s1.abc
 	m t.bbb do
 		s1.inner_join s2, "s1.abc = s2.abc"
+		s2.ccc
 		if s2.bbb > 90
 			s2.ccc
 			'A'
@@ -24,7 +25,6 @@ mapping("test") do
 			'B'
 		end
 	end
-	s2.ccc
 	m t.ddd do
 		s1.inner_join s2, "s1.abc = s2.abc"
 		s2.ddd

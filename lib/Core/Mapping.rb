@@ -32,6 +32,9 @@ module ETLTester
 				end
 			end
 			
+			# Use Mapping#m to define each mapping
+			# Usage: m <target column>, <source column> (straight move)
+			# 		or m <target column>, <block of source transformation> (define the transformation in the block)
 			def m *args, &blk
 				if (args.size == 2 && !block_given?)|| (args.size == 1 && block_given?)
 					if block_given?
@@ -42,7 +45,7 @@ module ETLTester
 						
 					end
 				else
-					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source logic>")
+					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source transformation>")
 				end
 			end
 		
@@ -51,6 +54,7 @@ module ETLTester
 
 end
 
+# Alias ETLTester::Core::Mapping#new
 def mapping mapping_name, &mapping_definiton
 	
 	new_mapping = ETLTester::Core::Mapping.new mapping_name, &mapping_definiton

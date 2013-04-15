@@ -10,5 +10,7 @@ module ETLTester
 
 	generate_error('SqlGeneratorError')
 	generate_error('UsageError')
+	generate_error('UnsupportError')
+	generate_error('StandError')
 
 end

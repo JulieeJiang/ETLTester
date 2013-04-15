@@ -4,7 +4,10 @@ module ETLTester
 		
 		module DBConnection
 
-			def get_data_from_db db_type, config, sql_txt
+			# Return a array of hash for the sql_txt.
+			# You should install proper database driver.
+			# e.g. if db_type is oracle, you should install dbi and ruby-oci8 first.
+			def self.get_data_from_db db_type, config, sql_txt
 
 				case type = db_type.downcase.to_sym
 					when :oracle
@@ -13,11 +16,12 @@ module ETLTester
 							dbh = DBI.connect("DBI:OCI8:#{config[:tns]}", config[:user_name], config[:password])
 							rs = dbh.prepare sql_txt
 							rs.execute
+							rs.fetch_all.collect {|record| record.to_h}
 						ensure
 							dbh.disconnect unless dbh.nil?
 						end
 					else
-						raise StandardError("Don't support #{type} so far.")
+						raise UnsupportError.new("Don't support #{type} so far.")
 				end
 						
 
