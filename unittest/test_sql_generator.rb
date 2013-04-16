@@ -19,10 +19,8 @@ mapping("test") do
 		s2.ccc
 		if s2.bbb > 90
 			s2.ccc
-			'A'
 		else
 			s2.ddd
-			'B'
 		end
 	end
 	m t.ddd do

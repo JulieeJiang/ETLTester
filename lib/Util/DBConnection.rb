@@ -16,7 +16,21 @@ module ETLTester
 							dbh = DBI.connect("DBI:OCI8:#{config[:tns]}", config[:user_name], config[:password])
 							rs = dbh.prepare sql_txt
 							rs.execute
-							rs.fetch_all.collect {|record| record.to_h}
+							records = []
+							rs.fetch_all.each do |r| 
+								record = r.to_h
+								# Convert data type.
+								record.each do |column_name, value|
+									if value.class == BigDecimal
+										if value.to_i == value
+											record[column_name] = value.to_i
+										end
+									end
+								end
+								records << record
+							end 
+
+							records
 						ensure
 							dbh.disconnect unless dbh.nil?
 						end

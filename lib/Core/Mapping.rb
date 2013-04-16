@@ -4,7 +4,7 @@ module ETLTester
 		
 		class Mapping
 			
-			attr_reader :mapping_name
+			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator
 					
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
