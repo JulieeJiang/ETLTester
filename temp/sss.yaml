@@ -1,9 +1,0 @@
----
-:db1:
-  :tns: abc
-  :password: abc
-  :user: abc
-:db2:
-  :tns: ccc
-  :password: ccc
-  :user: ddd

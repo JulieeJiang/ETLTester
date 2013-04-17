@@ -10,6 +10,10 @@ module ETLTester
 				@table, @column_name = table, column_name
 			end
 			
+			def to_s
+				"#{@table.alias_name}.#{column_name}"
+			end
+
 			def method_missing method_missing, *args, &blk
 				#{Do nothing} 
 			end

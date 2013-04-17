@@ -19,6 +19,9 @@ test_mapping = mapping("test_db_container") do
 		ci.ci_d_ky
 	end
 	m t.ddd, ci.dvc_type_ky
+	m t.eee do
+		app_d.app_ky + ci.ci_d_ky
+	end
 
 	#puts @source_sql_generator.generate_sql
 	#puts @target_sql_generator.generate_sql
@@ -26,15 +29,16 @@ end
 
 ds = ETLTester::Util::DBConnection.get_data_from_db(:oracle, {:tns => "ITR2ITG_DEDICATED", :user_name => "infr", :password => "INFR_INFR_2011.bb"}, test_mapping.source_sql_generator.generate_sql)
 
-ds.each do |data| 
-	# data.each do |k, v|
- #  		puts "#{k}: #{v}, #{v.class}"
-	# end
-	puts data["APP_KY"] + data["CI_D_KY"]
-	puts
+dc = ETLTester::Core::DataContainer.new ds, test_mapping.source_sql_generator
+expected_data = dc.transform *test_mapping.mapping_items
+
+expected_data.each do |value|
+	puts value
 end
 
-dc = ETLTester::Core::DataContainer.new ds, test_mapping.source_sql_generator
-puts(dc.transform do
-	app_d.app_ky + ci.ci_d_ky
-end)
+puts
+
+ds.each do |data| 
+	data["test"] = data["APP_KY"] + data["CI_D_KY"]
+	puts data
+end
