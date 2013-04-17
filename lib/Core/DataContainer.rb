@@ -17,9 +17,25 @@ module ETLTester
 					@columns << column_name
 				end
 			end
+		
+			# Redifne Table's method, to avoid some problems.
+			def self.define_blank_methods *method_names
+				class_eval do
+					method_names.each do |method_name|
+						define_method method_name do |*args, &blk|
+							# Do nothing
+						end
+					end
+				end
+			end
+
+			define_blank_methods :inner_join, :left_join, :right_join
+
+
 		end
 
 		class EntireRow
+			
 			def initialize *sub_rows
 				sub_rows.each do |sr|
 					(class << self; self; end).class_eval do
@@ -28,6 +44,19 @@ module ETLTester
 						end
 					end
 				end
+			end
+
+			# mapping_items: instance variable of Mapping's instance.
+			def transform *mapping_items
+				expected_row = {}
+				mapping_items.each do |mapping_item|
+					if mapping_item[:transfrom_logic].instance_of? Proc
+						expected_row[mapping_item[:target].column_name.downcase] = instance_eval &mapping_item[:transfrom_logic]
+					else # Straight move
+						expected_row[mapping_item[:target].column_name.downcase] = instance_eval {eval mapping_item[:transfrom_logic].to_s}
+					end
+				end
+				expected_row
 			end
 
 		end
@@ -61,8 +90,10 @@ module ETLTester
 
 			end
 
-			def transform &blk
-				@data.collect {|d| d.instance_eval &blk}
+			def transform *mapping_items
+				expected_data = []
+				@data.collect {|row| expected_data << row.transform(*mapping_items)}
+				expected_data
 			end
 
 		end

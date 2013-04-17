@@ -4,7 +4,7 @@ module ETLTester
 		
 		class Mapping
 			
-			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator
+			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
 					
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
@@ -26,6 +26,17 @@ module ETLTester
 				end
 			end
 			
+			def declare_cte_as sql, alias_name
+				@source_sql_generator.add_cte sql, alias_name
+				t = CteTable.new(alias_name, @source_sql_generator)
+				(class << self; self; end).class_eval do
+					define_method alias_name.downcase.to_sym do
+						t
+					end
+				end
+			end
+
+
 			def declare_target_table table_name, alias_name
 				t = Table.new(table_name, alias_name, @target_sql_generator)
 				(class << self; self; end).class_eval do
@@ -34,18 +45,17 @@ module ETLTester
 					end
 				end
 			end
-			
+
 			# Use Mapping#m to define each mapping
 			# Usage: m <target column>, <source column> (straight move)
 			# 		or m <target column>, <block of source transformation> (define the transformation in the block)
 			def m *args, &blk
 				if (args.size == 2 && !block_given?)|| (args.size == 1 && block_given?)
 					if block_given?
-						# sql generator could generate sql accordingly.
-						instance_eval &blk
-						#~ @mapping_items << {:target => }
+						instance_eval &blk # sql generator could generate sql accordingly.
+						@mapping_items << {:target => args[0], :transfrom_logic => blk}
 					else
-						
+						@mapping_items << {:target => args[0], :transfrom_logic => args[1]}
 					end
 				else
 					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source transformation>")

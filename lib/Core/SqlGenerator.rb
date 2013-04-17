@@ -9,12 +9,18 @@ module ETLTester
 			def initialize
 				@select = []
 				@from = {}
+				@cte = {} # sub queries.
 			end
 			
 			def add_select column
 				@select << column
 			end
 			
+			def add_cte sql_txt, alias_name
+				raise SqlGeneratorError.new("'#{alias_name}' is already used.") if(@cte.has_key?(alias_name) || @from.has_key?(alias_name))
+				@cte[alias_name] = sql_txt
+			end
+
 			def add_table table_name, alias_name, join_details = nil
 				if @from[alias_name].nil?
 					@from[alias_name] = [table_name, join_details]
@@ -34,8 +40,18 @@ module ETLTester
 			end
 			
 			def generate_sql
-				sql_txt = "Select\n\t"
-				sql_txt = "#{sql_txt}#{@select.collect {|col| "#{col.table.alias_name}.#{col.column_name}"}.join("\n\t, ")}\nFrom\n\t"
+				sql_txt = ""
+				if !@cte.empty?
+					@cte.each do |alias_name, sql|
+						sql_txt = %Q{#{sql_txt}with #{alias_name} as (#{sql})\n}
+					end	
+				end
+				sql_txt = "#{sql_txt}Select\n\t"
+				if @select.empty?
+					sql_txt = "#{sql_txt}*\nFrom\n\t"
+				else	
+					sql_txt = "#{sql_txt}#{@select.collect {|col| "#{col.table.alias_name}.#{col.column_name}"}.join("\n\t, ")}\nFrom\n\t"
+				end
 				first_line = ''
 				lines = []
 				@from.each do |k, v|

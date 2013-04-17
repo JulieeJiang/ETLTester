@@ -46,6 +46,14 @@ module ETLTester
 				original_method_missing method_name, *args, &blk
 			end
 			
+		end # class Table
+
+		class CteTable < Table
+		
+			def initialize alias_name, sql_generator
+				super(alias_name, alias_name, sql_generator)
+			end
+
 		end
 	
 	end
