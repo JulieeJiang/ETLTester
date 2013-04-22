@@ -1,4 +1,4 @@
-require '../lib/etltester'
+require '../../lib/etltester'
 
 test_mapping = mapping("test_db_container") do
 

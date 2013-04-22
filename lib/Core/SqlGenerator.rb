@@ -9,11 +9,11 @@ module ETLTester
 			def initialize
 				@select = []
 				@from = {}
-				@cte = {} # sub queries.
+				@cte = {} # commen table expression.
 			end
 			
 			def add_select column
-				@select << column
+				@select << column if !@select.include? column
 			end
 			
 			def add_cte sql_txt, alias_name
@@ -25,6 +25,7 @@ module ETLTester
 				if @from[alias_name].nil?
 					@from[alias_name] = [table_name, join_details]
 				else
+					# @from[alias_name][1]: join_details 
 					if @from[alias_name][1].nil? && !join_details.nil?
 						@from[alias_name] = [@from[alias_name][0], join_details]
 					else
@@ -59,7 +60,7 @@ module ETLTester
 						if first_line == ''
 							first_line = "#{v[0]} #{k}\n"
 						else
-							raise SqlGeneratorError.new('Invalid SqlGenerator')
+							raise SqlGeneratorError.new("Invalid SqlGenerator: Maybe something wrong with \"#{first_line}\" or \"#{v[0]} #{k}\"")
 						end
 					else
 						lines << "#{v[1][:join_type]}\n\t#{v[0]} #{k} on #{v[1][:condition]}"
