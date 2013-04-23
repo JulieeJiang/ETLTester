@@ -60,9 +60,9 @@ module ETLTester
 						instance_eval &blk # sql generator could generate sql accordingly.
 						@source_tables.each {|source_table| source_table._reverse_columns_flag} # Ensure all the paths could be executed.
 						instance_eval &blk
-						@mapping_items << {:target => args[0], :transfrom_logic => blk}
+						@mapping_items << {target: args[0], transfrom_logic: blk}
 					else
-						@mapping_items << {:target => args[0], :transfrom_logic => args[1]}
+						@mapping_items << {target: args[0], transfrom_logic: args[1]}
 					end
 				else
 					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source transformation>")
@@ -83,7 +83,7 @@ module ETLTester
 
 end
 
-# Alias ETLTester::Core::Mapping#new
+# Alias for ETLTester::Core::Mapping#new
 def mapping mapping_name, &mapping_definiton
 	
 	ETLTester::Core::Mapping.new mapping_name, &mapping_definiton

@@ -2,6 +2,7 @@ module ETLTester
 
 	module Core
 	
+		# Table...
 		class Table	
 			
 			attr_reader :table_name, :alias_name

@@ -4,7 +4,7 @@ module ETLTester
 		
 		module DBConnection
 
-			# Return a array of hash for the sql_txt.
+			# Return a array of hash by the sql_txt.
 			# You should install proper database driver.
 			# e.g. if db_type is oracle, you should install dbi and ruby-oci8 first.
 			def self.get_data_from_db db_type, config, sql_txt

@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+if ARGV.size == 0
+
+	puts %Q{et Options:
+	new	<Project Name> : Create a new ETL test project under current folder.
+	mapping <Mapping Name> : Create a new mapping with template under mappings folder.		
+	}
+
+end
+# puts Dir.pwd

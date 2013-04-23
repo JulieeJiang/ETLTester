@@ -9,7 +9,6 @@ module ETLTester
 				
 			end
 
-
 		end
 
 	end
