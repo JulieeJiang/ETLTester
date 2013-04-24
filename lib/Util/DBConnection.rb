@@ -7,13 +7,13 @@ module ETLTester
 			# Return a array of hash by the sql_txt.
 			# You should install proper database driver.
 			# e.g. if db_type is oracle, you should install dbi and ruby-oci8 first.
-			def self.get_data_from_db db_type, config, sql_txt
+			def self.get_data_from_db config, sql_txt
 
-				case type = db_type.downcase.to_sym
+				case type = config[:type].downcase.to_sym
 					when :oracle
 						require 'dbi'
 						begin
-							dbh = DBI.connect("DBI:OCI8:#{config[:tns]}", config[:user_name], config[:password])
+							dbh = DBI.connect("DBI:OCI8:#{config[:address]}", config[:user], config[:password])
 							rs = dbh.prepare sql_txt
 							rs.execute
 							records = []

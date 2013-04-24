@@ -7,24 +7,23 @@ module ETLTester
 			require 'yaml'
 			def self.set_project_path path
 				@@project_path = path
-				File.open("#{@@project_path}/configuration/config.yaml", 'a')
 			end
 			
-			def self.load_config config_name
-				get_configuration if !class_variable_defined?(:@@configuration)
+			def self.get_config config_name
+				load_config if !class_variable_defined?(:@@configuration)
 				@@configuration[config_name]
 			end
 
-			def self.set_config config_name, config_body
-				get_configuration if !class_variable_defined?(:@@configuration)
-				@@configuration[config_name] = config_body
-				File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
-					f.puts @@configuration.to_yaml
-				end
-			end
+			# def self.set_config config_name, config_body
+			# 	load_config if !class_variable_defined?(:@@configuration)
+			# 	@@configuration[config_name] = config_body
+			# 	File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
+			# 		f.puts @@configuration.to_yaml
+			# 	end
+			# end
 			
 			private
-			def self.get_configuration
+			def self.load_config
 				File.open("#{@@project_path}/configuration/config.yaml") do |f|
 					if f.size == 0
 						@@configuration ||= {}

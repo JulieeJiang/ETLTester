@@ -17,8 +17,23 @@ module ETLTester
 				Dir.mkdir("#{project_dir}/configuration")
 				
 				# Set default value.
-				Configuration::set_project_path project_dir
-				Configuration::set_config :MAX_ROW, 50000
+				File.open("#{project_dir}/configuration/config.yaml", 'w') do |file|
+					file.puts %Q{---
+# Project path
+:Project_Home: #{project_dir}
+# The max amount of sql returns.
+:MAX_ROW: 50000
+# How to connect database
+:DBConnection:
+  #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db
+  :type: 
+  #	Database address
+  :address: 
+  #	User for login Database
+  :user:
+  #	Password for above user.
+  :password: }
+				end
 
 				
 				Dir.mkdir("#{project_dir}/logs")
