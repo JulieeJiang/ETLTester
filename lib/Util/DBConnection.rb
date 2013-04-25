@@ -11,7 +11,11 @@ module ETLTester
 
 				case type = config[:type].downcase.to_sym
 					when :oracle
-						require 'dbi'
+						begin
+							require 'dbi'
+						rescue LoadError
+							raise StandError.new('Install dbi, ruby-oci8 first.(gem install dbi; gem install ruby-oci8)')
+						end
 						begin
 							dbh = DBI.connect("DBI:OCI8:#{config[:address]}", config[:user], config[:password])
 							rs = dbh.prepare sql_txt

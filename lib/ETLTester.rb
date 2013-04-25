@@ -5,10 +5,10 @@
 
 module ETLTester;end
 
-$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
+$LOAD_PATH.unshift(File.dirname(File.realpath(__FILE__))) unless $LOAD_PATH.include?(File.dirname(File.realpath(__FILE__)))
 
-Dir.new(__dir__).each do |d|
-	if Dir.exist?("#{__dir__}/#{d}") && d != ".."  && d != "."
-		Dir.new("#{__dir__}/#{d}").grep(/\.rb$/) {|f| require "#{d}/#{f}"}
+Dir.new(File.dirname(File.realpath(__FILE__))).each do |d|
+	if Dir.exist?("#{File.dirname(File.realpath(__FILE__))}/#{d}") && d != ".."  && d != "."
+		Dir.new("#{File.dirname(File.realpath(__FILE__))}/#{d}").grep(/\.rb$/) {|f| require "#{d}/#{f}"}
 	end
 end
