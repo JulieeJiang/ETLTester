@@ -27,5 +27,5 @@ test_mapping = mapping("test_db_container") do
 	#puts @target_sql_generator.generate_sql
 end
 
-ETLTester::Util::Configuration.set_project_path __dir__
+ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__))
 puts ETLTester::Framework::Driver.new.run_mapping test_mapping

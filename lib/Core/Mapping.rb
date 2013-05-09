@@ -58,8 +58,42 @@ module ETLTester
 				if (args.size == 2 && !block_given?)|| (args.size == 1 && block_given?)
 					if block_given?
 						instance_eval &blk # sql generator could generate sql accordingly.
-						@source_tables.each {|source_table| source_table._reverse_columns_flag} # Ensure all the paths could be executed.
+						@source_tables.each {|source_table| source_table._reverse_columns_flag} # Ensure most paths could be executed.
+						# Run "declare_source_table" twice will raise a exception, rewrite "declare_source_table" to avoid this situation. 
+						(class << self; self; end).class_eval do
+							def declare_source_table table_name, alias_name; end
+							def declare_cte_as sql, alias_name; end
+						end
 						instance_eval &blk
+						# Recove "declare_source_table"
+						(class << self; self; end).class_eval do
+
+							def declare_source_table table_name, alias_name 
+								raise UsageError.new("\"#{alias_name}\" is used or protected by ETLTester, please use another alias name.") if respond_to? alias_name.downcase.to_sym
+								if(table_name.downcase.include?("select") && table_name.downcase.include?("from"))
+									table_name = "(#{table_name})"
+								end
+								t = Table.new(table_name, alias_name, @source_sql_generator)
+								@source_tables << t
+								(class << self; self; end).class_eval do
+									define_method alias_name.downcase.to_sym do
+										t
+									end
+								end
+							end
+
+							def declare_cte_as sql, alias_name
+								raise UsageError.new("\"#{alias_name}\" is used or protected by ETLTester, please use another alias name.") if respond_to? alias_name.downcase.to_sym
+								@source_sql_generator.add_cte sql, alias_name
+								t = CteTable.new(alias_name, @source_sql_generator)
+								(class << self; self; end).class_eval do
+									define_method alias_name.downcase.to_sym do
+										t
+									end
+								end
+							end
+
+						end
 						@mapping_items << {target: args[0], transfrom_logic: blk}
 					else
 						@mapping_items << {target: args[0], transfrom_logic: args[1]}
@@ -77,7 +111,16 @@ module ETLTester
 				original_method_missing method_name, *args, &blk
 			end
 
-		
+			def setup &setup_blk
+				@setup_blk = setup_blk
+			end
+
+			def source_condition &get_condition
+			end
+
+			def target_condition &target_condition
+			end
+
 		end
 	end
 
@@ -85,7 +128,5 @@ end
 
 # Alias for ETLTester::Core::Mapping#new
 def mapping mapping_name, &mapping_definiton
-	
 	ETLTester::Core::Mapping.new mapping_name, &mapping_definiton
-	
 end

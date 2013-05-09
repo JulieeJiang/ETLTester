@@ -40,5 +40,6 @@ mapping("test") do
 	end
 
 	puts @source_sql_generator.generate_sql
-	puts @target_sql_generator.generate_sql
+	puts @source_sql_generator.sql_for_count
+	#puts @target_sql_generator.generate_sql
 end
