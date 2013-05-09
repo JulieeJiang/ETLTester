@@ -6,7 +6,7 @@ test_mapping = mapping("L3_SRVR_PATCH_DTL_F") do
 	declare_source_table "select * from itr23.srvr_d where lgcl_del_fg = 'n'", 'srvr_d'
 	
 
-	m t.srvr_ky, srvr_d.srvr_ky
+	mp t.srvr_ky, srvr_d.srvr_ky
 	
 	m t.it_asset_asgn_grp_org_hier_ky do 
 		declare_source_table 'itr23.ASGN_GRP_ORG_HIER_D', 'lkp_asset_org'

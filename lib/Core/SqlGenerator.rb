@@ -39,10 +39,6 @@ module ETLTester
 					end
 				end
 			end
-			
-			def add_where where_stmt
-				@where = where_stmt
-			end
 
 			def generate_sql
 				sql_txt = ""
@@ -70,41 +66,7 @@ module ETLTester
 						lines << "#{v[1][:join_type]}\n\t#{v[0]} #{k} on #{v[1][:condition]}"
 					end
 				end
-				sql_txt = sql_txt + first_line + lines.join("\n")
-				if @where.nil?
-					sql_txt
-				else
-					sql_txt + "\nwhere\n\t" + @where
-				end			
-			end
-
-			def sql_for_count
-				sql_txt = ""
-				if !@cte.empty?
-					@cte.each do |alias_name, sql|
-						sql_txt = %Q{#{sql_txt}with #{alias_name} as (#{sql})\n}
-					end	
-				end
-				sql_txt = "#{sql_txt}Select\n\tcount(1)\nFrom\n\t"
-				first_line = ''
-				lines = []
-				@from.each do |k, v|
-					if v[1].nil?	# v[0] is table name, v[1] is join_details.
-						if first_line == ''
-							first_line = "#{v[0]} #{k}\n"
-						else
-							raise SqlGeneratorError.new("Invalid SqlGenerator: Maybe something wrong with \"#{first_line}\" or \"#{v[0]} #{k}\"")
-						end
-					else
-						lines << "#{v[1][:join_type]}\n\t#{v[0]} #{k} on #{v[1][:condition]}"
-					end
-				end
-				sql_txt = sql_txt + first_line + lines.join("\n")
-				if @where.nil?
-					sql_txt
-				else
-					sql_txt + "\nwhere\n\t" + @where
-				end
+				sql_txt = sql_txt + first_line + lines.join("\n")		
 			end
 		
 		end

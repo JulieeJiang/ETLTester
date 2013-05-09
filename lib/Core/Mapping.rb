@@ -12,7 +12,21 @@ module ETLTester
 				@source_sql_generator = SqlGenerator.new
 				@target_sql_generator = SqlGenerator.new
 				@mapping_items = []
+				@pks = []
 				instance_eval &mapping_definiton
+				if !@params.nil?
+					arr = Dir.pwd.split('/mappings')
+					params_folder = arr[0] + '/parameters' + (arr[1].nil? ? "" : arr[1])
+					Dir.mkdir(params_folder) if !Dir.exist?(params_folder)
+					if File.exist?(params_folder + "/#{mapping_name}.yaml")
+						# Verify
+					else
+						File.open(params_folder + "/#{mapping_name}.yaml", 'w') do |f|
+							require 'yaml'
+							f.puts @params.to_h.to_yaml
+						end
+					end 
+				end
 			end
 			
 			def declare_source_table table_name, alias_name
@@ -65,7 +79,7 @@ module ETLTester
 							def declare_cte_as sql, alias_name; end
 						end
 						instance_eval &blk
-						# Recove "declare_source_table"
+						# Recover "declare_source_table"
 						(class << self; self; end).class_eval do
 
 							def declare_source_table table_name, alias_name 
@@ -103,6 +117,13 @@ module ETLTester
 				end
 			end
 
+			
+			def mp *args, &blk
+				m *args, &blk
+				@pks << args[0]
+			end
+
+
 			alias_method :original_method_missing, :method_missing
 			def method_missing method_name, *args, &blk
 				if args.size == 0 && !block_given?
@@ -111,14 +132,37 @@ module ETLTester
 				original_method_missing method_name, *args, &blk
 			end
 
-			def setup &setup_blk
-				@setup_blk = setup_blk
+
+			def params
+				@params ||= ParameterStub.new
 			end
 
-			def source_condition &get_condition
+
+			def source_filter &filter
+				@source_filter_definition = filter
 			end
 
-			def target_condition &target_condition
+			def target_filter &filter
+				@target_filter_definition = filter
+			end
+
+		end
+
+		# Used for generating parameter yaml.
+		class ParameterStub
+
+			def initialize
+				@keys = []
+			end
+
+			def [] key
+				@keys << key if !@keys.include? key
+			end
+
+			def to_h
+				h = {}
+				@keys.each {|key| h[key] = nil}
+				h
 			end
 
 		end

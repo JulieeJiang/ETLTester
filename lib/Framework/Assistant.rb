@@ -22,7 +22,7 @@ module ETLTester
 # Project path
 :Project_Home: #{project_dir}
 # The max amount of sql returns.
-:MAX_ROW: 50000
+:MAX_ROW: 200000
 # How to connect database
 :DBConnection:
   #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db

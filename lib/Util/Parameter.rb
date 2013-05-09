@@ -5,7 +5,7 @@ module ETLTester
 		class Parameter
 
 
-			def initialize
+			def initialize(mapping_name)
 				@param = {}
 			end
 
