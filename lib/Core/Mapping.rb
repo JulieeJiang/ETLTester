@@ -4,7 +4,7 @@ module ETLTester
 		
 		class Mapping
 			
-			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
+			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items, :params_file
 					
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
@@ -16,16 +16,28 @@ module ETLTester
 				instance_eval &mapping_definiton
 				if !@params.nil?
 					arr = Dir.pwd.split('/mappings')
-					params_folder = arr[0] + '/parameters' + (arr[1].nil? ? "" : arr[1])
+					if arr.size == 1
+						suffix_dir = arr[0]
+						prefix_dir = ''	
+					else
+						prefix_dir = arr.last
+						arr.delete_at(arr.size - 1)
+						suffix_dir = arr.join('/mappings')
+					end
+					params_folder = suffix_dir + '/parameters' + prefix_dir
 					Dir.mkdir(params_folder) if !Dir.exist?(params_folder)
+					require 'yaml'
 					if File.exist?(params_folder + "/#{mapping_name}.yaml")
-						# Verify
+						existed_params = File.open(params_folder + "/#{mapping_name}.yaml") {|f| YAML::load(f)}
+						if existed_params.keys != @params.to_h.keys
+							File.open(params_folder + "/#{mapping_name}.yaml", 'w') {|f| f.puts @params.to_h.to_yaml}	
+						end
 					else
 						File.open(params_folder + "/#{mapping_name}.yaml", 'w') do |f|
-							require 'yaml'
 							f.puts @params.to_h.to_yaml
 						end
-					end 
+					end
+					@params_file = params_folder + "/#{mapping_name}.yaml"
 				end
 			end
 			
@@ -118,6 +130,7 @@ module ETLTester
 			end
 
 			
+			# Set target column as primary key.
 			def mp *args, &blk
 				m *args, &blk
 				@pks << args[0]
@@ -137,15 +150,10 @@ module ETLTester
 				@params ||= ParameterStub.new
 			end
 
-
-			def source_filter &filter
-				@source_filter_definition = filter
+			attr_reader :source_filter, :target_filter
+			def set_source_filter filter
+				@source_filter = filter
 			end
-
-			def target_filter &filter
-				@target_filter_definition = filter
-			end
-
 		end
 
 		# Used for generating parameter yaml.

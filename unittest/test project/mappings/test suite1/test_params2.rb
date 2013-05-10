@@ -28,6 +28,7 @@ mapping("test") do
 	end
 	m t.ddd do
 		s1.inner_join s2, "s1.abc = s2.abc"
+		params[:a]
 		s2.ddd
 	end
 	m t.ccc do
@@ -36,7 +37,7 @@ mapping("test") do
 	end
 	m t.ddd do
 		s1.inner_join(s4, "s1.asd = s3.asd").left_join(s5, "s4.sss = s5.xxx").left_join(s6, "s5.asd = s6.xxx")
-		params[:test]
+		params[:b]
 		s6.asdd
 	end
 end
