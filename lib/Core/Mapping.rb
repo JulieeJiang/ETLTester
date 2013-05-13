@@ -151,9 +151,51 @@ module ETLTester
 			end
 
 			attr_reader :source_filter, :target_filter
-			def set_source_filter filter
+			def set_source_filter &filter
 				@source_filter = filter
+				instance_eval &filter
 			end
+
+			def set_target_filter &filter
+				@target_filter = filter
+				instance_eval &filter
+			end
+
+			def define_global_variable variable_name, &how
+				@global_variables ||= {}
+				@fake_global_variables ||= FakeVariableSet.new
+				@global_variables[variable_name] = how
+				@fake_global_variables[variable_name] = VariableStub.new
+			end
+
+			def global_variables
+				@fake_global_variables ||= FakeVariableSet.new
+				@fake_global_variables
+			end
+
+			def get_global_variables
+				@global_variables
+			end
+
+			def define_row_variable variable_name, &how
+				@row_variables ||= {}
+				@fake_row_variables ||= FakeVariableSet.new
+				@row_variables[variable_name] = how
+				@fake_row_variables[variable_name] = VariableStub.new
+			end
+
+			def row_variables
+				@fake_row_variables ||= FakeVariableSet.new
+				@fake_row_variables
+			end
+
+			def get_row_variables
+				@row_variables
+			end
+
+			alias_method :global_variable, :global_variables
+			alias_method :row_variable, :row_variables
+
 		end
 
 		# Used for generating parameter yaml.
@@ -174,6 +216,31 @@ module ETLTester
 			end
 
 		end
+
+		class FakeVariableSet
+			def initialize
+				@h = {}
+			end
+
+			def []= key, value
+				@h[key] = value
+			end
+
+			def [] key
+				raise StandError.new("Undefined varaible: #{key}") if !@h.has_key? key
+				@h[key]
+			end
+		end
+
+
+		class VariableStub
+			def method_missing method_name, *args, &blk
+				@flag ||= false
+				@flag = !@flag
+				@flag	
+			end
+		end
+
 	end
 
 end

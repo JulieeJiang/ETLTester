@@ -1,11 +1,9 @@
-require '../../lib/etltester'
+require '../../../../lib/etltester'
 
 test_mapping = mapping("test_db_container") do
 
 	# declare used table
-	declare_source_table(%q{
-		select * from itr23.app_d where rownum <= 10
-		}, 'app_d')
+	declare_source_table("itr23.app_d", 'app_d')
 	declare_source_table('itr23.ci_dtl_f', 'ci')
 	
 	declare_target_table('test', 't')
@@ -20,11 +18,16 @@ test_mapping = mapping("test_db_container") do
 	end
 	m t.ddd, ci.dvc_type_ky
 	m t.eee do
-		app_d.app_ky + ci.ci_d_ky
+		if app_d.app_ky > params[:nnn]
+			app_d.app_ky
+		else
+			ci.ci_d_ky
+		end
 	end
 
-	#puts @source_sql_generator.generate_sql
-	#puts @target_sql_generator.generate_sql
+	#source_filter
+	set_source_filter {"rownum <= #{params[:row_num]}"}
+
 end
 
 dc = ETLTester::Core::DataContainer.new test_mapping, 

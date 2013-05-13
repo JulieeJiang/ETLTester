@@ -22,7 +22,7 @@ module ETLTester
 				"#{@table.alias_name}.#{column_name}"
 			end
 
-			def method_missing method_missing, *args, &blk
+			def method_missing method_name, *args, &blk
 				@flag
 			end
 		

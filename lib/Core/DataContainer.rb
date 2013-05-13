@@ -36,6 +36,8 @@ module ETLTester
 
 		class EntireRow
 			
+			attr_accessor :params, :global_variables
+
 			def initialize *sub_rows
 				sub_rows.each do |sr|
 					(class << self; self; end).class_eval do
@@ -46,8 +48,20 @@ module ETLTester
 				end
 			end
 
+			def set_raw_row_variables raw_row_variables
+				@raw_row_variables = raw_row_variables
+			end
+
+			def row_variables
+				@row_variables
+			end
+
 			# mapping_items: instance variable of Mapping's instance.
 			def transform *mapping_items
+				if !@raw_row_variables.nil?
+					@row_variables = {}
+					@raw_row_variables.each {|key, value| @row_variables[key] = instance_eval &value}
+				end
 				expected_row = {}
 				mapping_items.each do |mapping_item|
 					if mapping_item[:transfrom_logic].instance_of? Proc
@@ -62,20 +76,38 @@ module ETLTester
 		end
 
 		class DataContainer
-		
-			# data 			: return of ETLTester::Util::DBConnection::get_data_from_db
-			# sql_generator	: instance of SqlGnerator
-			def initialize data, sql_generator
+
+			# mapping 		: instance of ETLTester::Core::Mapping
+			# db_connection	: {type: orcale, address: xxx, user: xxx, password: xxx}
+			def initialize mapping, db_connection
+				
+				# Get Parameters
+				if !mapping.params_file.nil?
+					set_params mapping.params_file
+					params.each_key {|key| raise StandError.new("You must specify value for Parameter: #{key} (Mapping: #{mapping.mapping_name}).") if params[key].nil?}
+				end
+				
+				# Get Variables
+				if !mapping.global_variables.nil?
+					set_global_variables mapping.get_global_variables
+				end
+
+				# Source data
 				row = {}
 				select_orders = []
-				sql_generator.select.each do |column|
+				mapping.source_sql_generator.select.each do |column|
 					row[column.table] ||= SubRow.new(column.table)
 					row[column.table].add_column column.column_name
 					select_orders << [column.table, column.column_name.downcase] # This order is consistebt with the select statement of sql_generator.
 				end
 				
 				@data = []
-
+				if mapping.source_filter.nil?
+					sql_stmt = mapping.source_sql_generator.generate_sql
+				else
+					sql_stmt = mapping.source_sql_generator.generate_sql + " where " + (instance_eval &mapping.source_filter)
+				end
+				data = ETLTester::Util::DBConnection.get_data_from_db(db_connection, sql_stmt)
 				# Fill data
 				data.each do |record|
 					new_row = {}
@@ -85,7 +117,11 @@ module ETLTester
 						new_row[select_orders[idx][0]].__send__("#{select_orders[idx][1]}=".to_sym, v)
 						idx = idx + 1
 					end					
-					@data << EntireRow.new(*new_row.values)
+					entire_row = EntireRow.new(*new_row.values)
+					entire_row.params = @params if !@params.nil?
+					entire_row.global_variables = @global_variables if !@global_variables.nil?
+					entire_row.set_raw_row_variables mapping.get_row_variables if !mapping.row_variables.nil?
+					@data << entire_row
 				end
 
 			end
@@ -95,6 +131,29 @@ module ETLTester
 				@data.collect {|row| expected_data << row.transform(*mapping_items)}
 				expected_data
 			end
+
+			private
+			def set_params params_file
+				require 'yaml'
+				File.open(params_file) do |f|
+					@params = YAML::load(f)
+				end
+			end
+
+			def params
+				@params
+			end
+
+			def set_global_variables global_variables
+				@global_variables = {}
+				global_variables.each {|key, value| @global_variables[key] = value.call}
+			end
+
+			def global_variables
+				@global_variables
+			end
+
+			alias_method :global_variable, :global_variables
 
 		end
 

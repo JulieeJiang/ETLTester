@@ -40,6 +40,8 @@ module ETLTester
 			alias_method :original_method_missing, :method_missing
 			
 			def method_missing method_name, *args, &blk			
+				return __send__(method_name, *args, &blk) if respond_to? method_name.to_s.downcase
+				method_name = method_name.to_s.downcase.to_sym
 				if args.size == 0 && !block_given?
 					new_column = Column.new(self, method_name.to_s)
 					
