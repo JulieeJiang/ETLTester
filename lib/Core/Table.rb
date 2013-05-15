@@ -31,6 +31,9 @@ module ETLTester
 			def right_join table, join_condition
 				join table, "right join", join_condition
 			end
+
+			alias_method :lookup, :left_join
+			alias_method :link, :inner_join
 			
 			def _reverse_columns_flag
 				@columns.each {|column| column._reverse_flag}

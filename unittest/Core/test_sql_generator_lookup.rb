@@ -18,7 +18,7 @@ mapping("test") do
 	# define mapping
 	m t.abc, s1.abc
 	m t.bbb do
-		s1.inner_join s2, "s1.abc = s2.abc"
+		link s2, "s1.abc = s2.abc"
 		s2.ccc
 		if s2.bbb > 90
 			s2.ccc
@@ -27,15 +27,15 @@ mapping("test") do
 		end
 	end
 	m t.ddd do
-		s1.inner_join s2, "s1.abc = s2.abc"
+		link s2, "s1.abc = s2.abc"
 		s2.ddd
 	end
 	m t.ccc do
-		s1.inner_join s3, "s1.asd = s3.asd"
+		link s3, "s1.asd = s3.asd"
 		s3.ccc
 	end
 	m t.ddd do
-		s1.inner_join(s4, "s1.asd = s3.asd").left_join(s5, "s4.sss = s5.xxx").left_join(s6, "s5.asd = s6.xxx")
+		lookup(s4, "s1.asd = s3.asd").left_join(s5, "s4.sss = s5.xxx").left_join(s6, "s5.asd = s6.xxx")
 		s6.asdd
 	end
 

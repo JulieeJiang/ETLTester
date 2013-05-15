@@ -4,7 +4,7 @@ module ETLTester
 		
 		class Mapping
 			
-			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items, :params_file
+			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items, :source_tables, :params_file
 					
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
@@ -136,6 +136,16 @@ module ETLTester
 				@pks << args[0]
 			end
 
+			def lookup table, join_condition
+				IntermediateTable.new(@source_sql_generator).left_join table, join_condition
+			end
+
+			def link table, join_condition
+				IntermediateTable.new(@source_sql_generator).inner_join table, join_condition
+			end
+
+			alias_method :left_join, :lookup
+			alias_method :inner_join, :link
 
 			alias_method :original_method_missing, :method_missing
 			def method_missing method_name, *args, &blk
@@ -182,6 +192,7 @@ module ETLTester
 				@fake_row_variables ||= FakeVariableSet.new
 				@row_variables[variable_name] = how
 				@fake_row_variables[variable_name] = VariableStub.new
+				instance_eval &how
 			end
 
 			def row_variables

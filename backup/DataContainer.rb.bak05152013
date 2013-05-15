@@ -29,11 +29,6 @@ module ETLTester
 				end
 			end
 
-			# Used for debug.
-			def inspect
-				@columns.collect {|column| column + ": " + __send__(column.to_sym).to_s}.join(', ')
-			end
-
 			define_blank_methods :inner_join, :left_join, :right_join, :lookup, :link
 
 
@@ -51,14 +46,9 @@ module ETLTester
 						end
 					end
 				end
-				@sub_rows = sub_rows
 			end
 
-			def inspect
-				@sub_rows.map(&:inspect).join("\n")
-			end
-
-			def _set_raw_row_variables raw_row_variables
+			def set_raw_row_variables raw_row_variables
 				@raw_row_variables = raw_row_variables
 			end
 
@@ -109,8 +99,7 @@ module ETLTester
 
 			# mapping 		: instance of ETLTester::Core::Mapping
 			# db_connection	: {type: orcale, address: xxx, user: xxx, password: xxx}
-			# max_row		: Configuration[:MAX_ROW]
-			def initialize mapping, db_connection, max_row
+			def initialize mapping, db_connection
 				
 				$timer.record "Run mapping #{mapping.mapping_name}." if $debug
 
@@ -118,82 +107,75 @@ module ETLTester
 				if !mapping.params_file.nil?
 					set_params mapping.params_file
 					params.each_key {|key| raise StandError.new("You must specify value for Parameter: #{key} (Mapping: #{mapping.mapping_name}).") if params[key].nil?}
-					$timer.record "Get parameter." if $debug
 				end
 				
 				# Get Variables
 				if !mapping.get_global_variables.nil?
 					set_global_variables mapping.get_global_variables
-					$timer.record "Get global variables." if $debug
 				end
 
-				@mapping, @db_connection, @max_row = mapping, db_connection, max_row
-
-				# Get @actual_data
-				
-				set_actual_data
-				$timer.record "Extract actual data from database." if $debug
-
-				set_expected_data
-				$timer.record "Extract expected data from database." if $debug
-
-			end
-
-			private
-
-			def set_actual_data
-				if @mapping.target_filter.nil?
-					sql_stmt = @mapping.target_sql_generator.generate_sql
-					count_sql = @mapping.target_sql_generator.generate_count_sql
-				else
-					sql_stmt = @mapping.target_sql_generator.generate_sql + " where " + (instance_eval &@mapping.target_filter)
-					count_sql = @mapping.target_sql_generator.generate_count_sql + " where " + (instance_eval &@mapping.target_filter)
-				end
-				
-				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
-				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
-				
-				@actual_data = []
-				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|
-					actual_record = {}
-					record.each_with_index {|value, idx| actual_record[@mapping.target_sql_generator.select[idx].column_name] = value}
-					@actual_data << actual_record
-				end
-			end
-
-			def set_expected_data
+				# Source data
 				row = {}
 				select_orders = []
-				@mapping.source_sql_generator.select.each do |column|
+				mapping.source_sql_generator.select.each do |column|
 					row[column.table] ||= SubRow.new(column.table)
 					row[column.table]._add_column column.column_name
 					select_orders << [column.table, column.column_name.downcase] # This order is consistebt with the select statement of sql_generator.
 				end
 
-				@mapping.source_tables.each {|table| row[table] ||= SubRow.new(table)} # Some tables are only used for join.
-
-				if @mapping.source_filter.nil?
-					sql_stmt = @mapping.source_sql_generator.generate_sql
-					count_sql = @mapping.source_sql_generator.generate_count_sql
+				mapping.source_tables.each {|table| row[table] ||= SubRow.new(table)}
+				
+				@data = []
+				if mapping.source_filter.nil?
+					sql_stmt = mapping.source_sql_generator.generate_sql
 				else
-					sql_stmt = @mapping.source_sql_generator.generate_sql + " where " + (instance_eval &@mapping.source_filter)
-					count_sql = @mapping.source_sql_generator.generate_count_sql + " where " + (instance_eval &@mapping.source_filter)
+					sql_stmt = mapping.source_sql_generator.generate_sql + " where " + (instance_eval &mapping.source_filter)
 				end
-				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
-				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
-				@expected_data = []
-				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|					
+				data = ETLTester::Util::DBConnection.get_data_from_db(db_connection, sql_stmt)
+				
+				$timer.record "Extract raw data from database." if $debug
+
+				# Fill data
+				data.each do |record|
 					new_row = {}
 					row.each {|k, v| new_row[k] = v.clone}
-					record.each_with_index {|v, idx| new_row[select_orders[idx][0]].__send__(:"#{select_orders[idx][1]}=", v)}
+					idx = 0					
+					record.each do |v|
+						new_row[select_orders[idx][0]].__send__("#{select_orders[idx][1]}=".to_sym, v)
+						idx = idx + 1
+					end					
 					entire_row = EntireRow.new(*new_row.values)
-					#puts entire_row.inspect
 					entire_row.params = @params if !@params.nil?
 					entire_row.global_variables = @global_variables if !@global_variables.nil?
-					entire_row._set_raw_row_variables @mapping.get_row_variables if !@mapping.row_variables.nil?
-					@expected_data << entire_row.transform(*@mapping.mapping_items)
+					entire_row.set_raw_row_variables mapping.get_row_variables if !mapping.row_variables.nil?
+					@data << entire_row
 				end
+
+				$timer.record "Extract actual data from database." if $debug
+				# Get actual data
+				if mapping.target_filter.nil?
+					sql_stmt = mapping.target_sql_generator.generate_sql
+				else
+					sql_stmt = mapping.target_sql_generator.generate_sql + " where " + (instance_eval &mapping.target_filter)
+				end
+				
+				@actual_data = []
+				ETLTester::Util::DBConnection.get_data_from_db(db_connection, sql_stmt).each do |record|
+					actual_data = {}
+					record.each_with_index {|value, idx| actual_data[mapping.target_sql_generator.select[idx].column_name] = value}
+					@actual_data << actual_data
+				end
+
 			end
+
+			def transform *mapping_items
+				@expected_data = []
+				@data.collect {|row| expected_data << row.transform(*mapping_items)}
+				$timer.record "Transform data by ETLTester." if $debug
+				@expected_data
+			end
+
+			private
 
 			def set_params params_file
 				require 'yaml'

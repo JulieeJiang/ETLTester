@@ -14,7 +14,7 @@ test_mapping = mapping("test_variable") do
 	define_row_variable(:app_ky) {app_d.app_ky}
 
 	# define mapping
-	m t.aaa, app_d.app_ky
+	mp t.aaa, app_d.app_ky
 	m t.bbb, app_d.app_ci_lgcl_nm
 	m t.ccc do
 		app_d.inner_join ci, "app_d.app_ci_lgcl_nm = ci.ci_lgcl_nm"
@@ -39,7 +39,9 @@ test_mapping = mapping("test_variable") do
 		end
 	end
 
-	#source_filter
+	m t.ggg do
+		row_variables[:app_ky]
+	end
 	set_source_filter {"rownum <= #{global_variables[:row_num]}"}
 
 end

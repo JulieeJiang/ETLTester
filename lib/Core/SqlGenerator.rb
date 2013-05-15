@@ -68,6 +68,30 @@ module ETLTester
 				end
 				sql_txt = sql_txt + first_line + lines.join("\n")		
 			end
+
+			def generate_count_sql
+				sql_txt = ""
+				if !@cte.empty?
+					@cte.each do |alias_name, sql|
+						sql_txt = %Q{#{sql_txt}with #{alias_name} as (#{sql})\n}
+					end	
+				end
+				sql_txt = "#{sql_txt}Select\n\tcount(1)\nFrom\n\t"
+				first_line = ''
+				lines = []
+				@from.each do |k, v|
+					if v[1].nil?	# v[0] is table name, v[1] is join_details.
+						if first_line == ''
+							first_line = "#{v[0]} #{k}\n"
+						else
+							raise SqlGeneratorError.new("Invalid SqlGenerator: Maybe something wrong with \"#{first_line}\" or \"#{v[0]} #{k}\"")
+						end
+					else
+						lines << "#{v[1][:join_type]}\n\t#{v[0]} #{k} on #{v[1][:condition]}"
+					end
+				end
+				sql_txt = sql_txt + first_line + lines.join("\n")		
+			end
 		
 		end
 	
