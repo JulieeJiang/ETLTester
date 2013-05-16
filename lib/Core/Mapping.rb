@@ -4,8 +4,10 @@ module ETLTester
 		
 		class Mapping
 			
-			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items, :source_tables, :params_file
-					
+			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
+			attr_reader :source_tables, :params_file, :pks, :source_ignored_items, :target_ignored_items
+			
+
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
 				@source_tables = []
@@ -13,6 +15,7 @@ module ETLTester
 				@target_sql_generator = SqlGenerator.new
 				@mapping_items = []
 				@pks = []
+				@source_ignored_items, @target_ignored_items = [], []
 				instance_eval &mapping_definiton
 				if !@params.nil?
 					arr = Dir.pwd.split('/mappings')
@@ -133,7 +136,7 @@ module ETLTester
 			# Set target column as primary key.
 			def mp *args, &blk
 				m *args, &blk
-				@pks << args[0]
+				@pks << args[0].column_name
 			end
 
 			def lookup table, join_condition

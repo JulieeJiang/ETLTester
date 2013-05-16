@@ -78,9 +78,9 @@ module ETLTester
 				expected_row = {}
 				mapping_items.each do |mapping_item|
 					if mapping_item[:transfrom_logic].instance_of? Proc
-						expected_row[mapping_item[:target].column_name.downcase] = instance_eval &mapping_item[:transfrom_logic]
+						expected_row[mapping_item[:target].column_name.downcase.to_sym] = instance_eval &mapping_item[:transfrom_logic]
 					else # Straight move
-						expected_row[mapping_item[:target].column_name.downcase] = instance_eval {eval mapping_item[:transfrom_logic].to_s}
+						expected_row[mapping_item[:target].column_name.downcase.to_sym] = instance_eval {eval mapping_item[:transfrom_logic].to_s}
 					end
 				end
 				expected_row
@@ -103,15 +103,16 @@ module ETLTester
 
 		class DataContainer
 
-			attr_reader :expected_data, :actual_data
-
-			$timer = ETLTester::Util::Timer.new if $debug
+			attr_reader :expected_data, :actual_data, :warning_list
 
 			# mapping 		: instance of ETLTester::Core::Mapping
 			# db_connection	: {type: orcale, address: xxx, user: xxx, password: xxx}
 			# max_row		: Configuration[:MAX_ROW]
 			def initialize mapping, db_connection, max_row
+				$timer = ETLTester::Util::Timer.new if $debug
 				
+				@warning_list = []
+
 				$timer.record "Run mapping #{mapping.mapping_name}." if $debug
 
 				# Get Parameters
@@ -131,11 +132,11 @@ module ETLTester
 
 				# Get @actual_data
 				
-				set_actual_data
-				$timer.record "Extract actual data from database." if $debug
+				total_row = set_actual_data
+				$timer.record "Extract actual data from database. #{total_row} records." if $debug
 
-				set_expected_data
-				$timer.record "Extract expected data from database." if $debug
+				total_row = set_expected_data
+				$timer.record "Extract expected data from database. #{total_row} records." if $debug
 
 			end
 
@@ -153,12 +154,24 @@ module ETLTester
 				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
 				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
 				
-				@actual_data = []
+				@actual_data = {}
 				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|
+					k = {}
 					actual_record = {}
-					record.each_with_index {|value, idx| actual_record[@mapping.target_sql_generator.select[idx].column_name] = value}
-					@actual_data << actual_record
+					record.each_with_index do |value, idx| 
+						raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.nil?
+						if @mapping.pks.include? @mapping.target_sql_generator.select[idx].column_name
+							k[@mapping.target_sql_generator.select[idx].column_name.to_sym] = value
+						end
+						actual_record[@mapping.target_sql_generator.select[idx].column_name.to_sym] = value
+					end
+					if !@actual_data[k].nil?
+						@warning_list << "Mapping #{@mapping.mapping_name}: Duplicate records use same PK: #{k}"
+						warn "Mapping #{@mapping.mapping_name}: Duplicate records use same PK: #{k}"
+					end
+					@actual_data[k] = actual_record
 				end
+				total_row
 			end
 
 			def set_expected_data
@@ -181,7 +194,7 @@ module ETLTester
 				end
 				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
 				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
-				@expected_data = []
+				@expected_data = {}
 				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|					
 					new_row = {}
 					row.each {|k, v| new_row[k] = v.clone}
@@ -191,8 +204,16 @@ module ETLTester
 					entire_row.params = @params if !@params.nil?
 					entire_row.global_variables = @global_variables if !@global_variables.nil?
 					entire_row._set_raw_row_variables @mapping.get_row_variables if !@mapping.row_variables.nil?
-					@expected_data << entire_row.transform(*@mapping.mapping_items)
+					expected_record = entire_row.transform(*@mapping.mapping_items)
+					k = {}
+					@mapping.pks.each {|pk| k[pk.to_sym] = expected_record[pk.to_sym]}
+					if !@expected_data[k].nil?
+						@warning_list << "Mapping #{@mapping.mapping_name}: Duplicate records use same PK: #{k}"
+						warn "Mapping #{@mapping.mapping_name}: Duplicate records use same PK: #{k}"
+					end
+					@expected_data[k] = expected_record 
 				end
+				total_row
 			end
 
 			def set_params params_file

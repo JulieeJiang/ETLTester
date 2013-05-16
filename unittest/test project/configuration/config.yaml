@@ -5,7 +5,7 @@
 :MAX_ROW: 50000
 # How to connect database
 :DBConnection:
-  #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db
+  #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection
   :type: oracle
   #	Database address
   :address: ITR2ITG_DEDICATED
