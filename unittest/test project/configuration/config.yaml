@@ -2,7 +2,7 @@
 # Project path
 :Project_Home: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/Util/../test project
 # The max amount of sql returns.
-:MAX_ROW: 50000
+:MAX_ROW: 200000
 # How to connect database
 :DBConnection:
   #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection

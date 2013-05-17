@@ -19,6 +19,7 @@ module ETLTester
 				summary = {}
 				detial = []
 				used_pks = []
+				summary[:Result] = 'Pass'
 				summary[:expected_data_size] = @expected_data.size
 				summary[:actual_data_size] = @actual_data.size
 
@@ -45,6 +46,7 @@ module ETLTester
 						ret = record.values
 						1.upto(record.size) {ret << "NOT FOUND"}
 						ret << false
+						summary[:Result] = 'Fail'
 						detial << ret
 						next
 					else

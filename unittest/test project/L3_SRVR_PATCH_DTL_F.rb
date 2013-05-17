@@ -121,13 +121,21 @@ test_mapping = mapping("L3_SRVR_PATCH_DTL_F") do
 
 end
 
-dc = ETLTester::Core::DataContainer.new test_mapping, 
-	{type: :oracle, address: "ITR2ITG_DEDICATED", user: "infr", password: "INFR_INFR_2011.bb"}, 200000
+# dc = ETLTester::Core::DataContainer.new test_mapping, 
+# 	{type: :oracle, address: "ITR2ITG_DEDICATED", user: "infr", password: "INFR_INFR_2011.bb"}, 200000
 
-result = ETLTester::Framework::Comparer.new(dc.expected_data, dc.actual_data, test_mapping.source_ignored_items, test_mapping.target_ignored_items, dc.warning_list).compare
+# result = ETLTester::Framework::Comparer.new(dc.expected_data, dc.actual_data, test_mapping.source_ignored_items, test_mapping.target_ignored_items, dc.warning_list).compare
 
-puts result[0][:header]
-puts result[1].select {|ret| !ret.last}
+ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__))
+driver = ETLTester::Framework::Driver.new
+
+driver.mapping = test_mapping
+driver.run 1
+
+
+
+# puts result[0][:header]
+# puts result[1].select {|ret| !ret.last}
 
 # dc.actual_data.each do |record|
 # 	puts record
