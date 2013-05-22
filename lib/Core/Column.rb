@@ -31,3 +31,17 @@ module ETLTester
 	end
 
 end
+
+# To avoid error during eval mapping phase.
+# E.g. a = table.column; b = a + 1
+class TrueClass
+	def method_missing method_name, *args, &blk
+		self
+	end
+end
+
+class FalseClass
+	def method_missing method_name, *args, &blk
+		self
+	end
+end

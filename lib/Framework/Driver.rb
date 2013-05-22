@@ -36,15 +36,48 @@ module ETLTester
 				
 				r.addHeader summary_header, :Summary
 				r.addData :temp, summary_content, :Summary
-
 				
-				r.addHeader ['Result'] + result[0][:header], :Detail
-				result[1].each_with_index do |ret, idx|
-					pass_fail = ret.last ? "Pass" : "Fail"
-					r.addData :"expected#{idx}", ["Expected: #{pass_fail}"] + ret[0, (ret.size - 1) / 2], :Detail
-					r.addData :"actual#{idx}", ["Actual: #{pass_fail}"] + ret[(ret.size - 1) / 2, (ret.size - 1) / 2], :Detail					
+				if @report_level != :smmary
+					
+					r.addHeader ['Result'] + result[0][:header], :Detail
+					if @report_level == :all
+						result[1].each_with_index do |ret, idx|
+							pass_fail = ret.last ? "Pass" : "Fail"
+							r.addData :"expected#{idx}", ["Expected: #{pass_fail}"] + ret[0, (ret.size - 1) / 2], :Detail
+							r.addData :"actual#{idx}", ["Actual: #{pass_fail}"] + ret[(ret.size - 1) / 2, (ret.size - 1) / 2], :Detail					
+						end
+					end
+					if @report_level == :fail
+						result[1].each_with_index do |ret, idx|
+							pass_fail = ret.last ? "Pass" : "Fail"
+							if !ret.last
+								r.addData :"expected#{idx}", ["Expected: #{pass_fail}"] + ret[0, (ret.size - 1) / 2], :Detail
+								r.addData :"actual#{idx}", ["Actual: #{pass_fail}"] + ret[(ret.size - 1) / 2, (ret.size - 1) / 2], :Detail					
+							end
+						end
+					end
+					if @report_level == :smart
+						failed_count = 0
+						column_count = 0
+						result[1].each_with_index do |ret, idx|
+							pass_fail = ret.last ? "Pass" : "Fail"
+							column_count = (ret.size - 1) / 2
+							if !ret.last
+								failed_count += 1
+								r.addData :"expected#{idx}", ["Expected: #{pass_fail}"] + ret[0, (ret.size - 1) / 2], :Detail
+								r.addData :"actual#{idx}", ["Actual: #{pass_fail}"] + ret[(ret.size - 1) / 2, (ret.size - 1) / 2], :Detail					
+							end
+							break if failed_count >= 200
+						end
+						if failed_count >= 200
+								blank_line = ["------"]
+								1.upto(column_count) {blank_line << '---'}
+								r.addData :"expected201", blank_line, :Detail
+								r.addData :"actual201", blank_line, :Detail
+						end
+					end
 				end
-
+				
 				r.generate 'Detail_' + Time.now.strftime("%H%M%S"), '.'
 			end
 

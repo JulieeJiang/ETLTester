@@ -51,6 +51,7 @@ module ETLTester
 						next
 					else
 						ret = (record.values + @actual_data[pk].values) << (record == @actual_data[pk])
+						summary[:Result] = 'Fail' if !ret
 						detial << ret
 						used_pks << pk
 						next

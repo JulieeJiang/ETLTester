@@ -41,7 +41,8 @@ module ETLTester
 
 		class EntireRow
 			
-			attr_accessor :params, :global_variables
+			attr_accessor :params, :variables
+			attr_reader :rows
 
 			def initialize *sub_rows
 				sub_rows.each do |sr|
@@ -52,29 +53,20 @@ module ETLTester
 					end
 				end
 				@sub_rows = sub_rows
+				@rows = SymbolHash.new
 			end
 
+			# Used for debug.
 			def inspect
 				@sub_rows.map(&:inspect).join("\n")
 			end
 
-			def _set_raw_row_variables raw_row_variables
-				@raw_row_variables = raw_row_variables
-			end
-
-			def row_variables
-				@row_variables
-			end
-
-			alias_method :global_variable, :global_variables
-			alias_method :row_variable, :row_variables
+			alias_method :variable, :variables
+			alias_method :param, :params
+			alias_method :row, :rows
 
 			# mapping_items: instance variable of Mapping's instance.
 			def transform *mapping_items
-				if !@raw_row_variables.nil?
-					@row_variables = {}
-					@raw_row_variables.each {|key, value| @row_variables[key] = instance_eval &value}
-				end
 				expected_row = {}
 				mapping_items.each do |mapping_item|
 					if mapping_item[:transfrom_logic].instance_of? Proc
@@ -82,6 +74,7 @@ module ETLTester
 					else # Straight move
 						expected_row[mapping_item[:target].column_name.downcase.to_sym] = instance_eval {eval mapping_item[:transfrom_logic].to_s}
 					end
+					@rows[mapping_item[:target].column_name.downcase.to_sym] = expected_row[mapping_item[:target].column_name.downcase.to_sym]
 				end
 				expected_row
 			end
@@ -123,15 +116,15 @@ module ETLTester
 				end
 				
 				# Get Variables
-				if !mapping.get_global_variables.nil?
-					set_global_variables mapping.get_global_variables
-					$timer.record "Get global variables." if $debug
+				if !mapping.get_variables.nil?
+					set_variables mapping.get_variables
+					$timer.record "Get variables." if $debug
 				end
 
 				@mapping, @db_connection, @max_row = mapping, db_connection, max_row
 
 				# Get @actual_data
-				
+				raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.empty?
 				total_row = set_actual_data
 				$timer.record "Extract actual data from database. #{total_row} records." if $debug
 
@@ -159,7 +152,6 @@ module ETLTester
 					k = {}
 					actual_record = {}
 					record.each_with_index do |value, idx| 
-						raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.nil?
 						if @mapping.pks.include? @mapping.target_sql_generator.select[idx].column_name
 							k[@mapping.target_sql_generator.select[idx].column_name.to_sym] = value
 						end
@@ -202,8 +194,7 @@ module ETLTester
 					entire_row = EntireRow.new(*new_row.values)
 					#puts entire_row.inspect
 					entire_row.params = @params if !@params.nil?
-					entire_row.global_variables = @global_variables if !@global_variables.nil?
-					entire_row._set_raw_row_variables @mapping.get_row_variables if !@mapping.row_variables.nil?
+					entire_row.variables = @variables if !@variables.nil?
 					expected_record = entire_row.transform(*@mapping.mapping_items)
 					k = {}
 					@mapping.pks.each {|pk| k[pk.to_sym] = expected_record[pk.to_sym]}
@@ -227,17 +218,28 @@ module ETLTester
 				@params
 			end
 
-			def set_global_variables global_variables
-				@global_variables = {}
-				global_variables.each {|key, value| @global_variables[key] = value.call}
+			def set_variables variables
+				@variables = {}
+				variables.each {|key, value| @variables[key] = value.call}
 			end
 
-			def global_variables
-				@global_variables
+			def variables
+				@variables
 			end
 
-			alias_method :global_variable, :global_variables
+			alias_method :variable, :variables
+			alias_method :param, :params
 
+		end
+
+		class SymbolHash < Hash
+			def [] key
+				super key.to_s.downcase.to_sym
+			end
+			
+			def []= key, value
+				super key.to_s.downcase.to_sym, value
+			end
 		end
 
 	end

@@ -19,10 +19,10 @@ module ETLTester
 						oci = OCI8.new(config[:user], config[:password], config[:address])
 						oci.prefetch_rows = 15000
 						records = []
+						require 'bigdecimal'
 						oci.exec(sql_txt) do |record|
-							# Convert data type.
 							records << record.collect do |i|
-								if i.class == BigDecimal
+								if i.kind_of? BigDecimal
 									if i.to_i == i
 										next i.to_i
 									end
@@ -47,11 +47,12 @@ module ETLTester
 							raise StandError.new('Install ruby-oci8 first.(gem install ruby-oci8)')
 						end
 						oci = OCI8.new(config[:user], config[:password], config[:address])
+						require 'bigdecimal'
 						oci.prefetch_rows = 15000
 						oci.exec(sql_txt) do |record|
 							# Convert data type.
 							yield(record.collect do |i|
-								if i.class == BigDecimal
+								if i.kind_of? BigDecimal
 									if i.to_i == i
 										next i.to_i
 									end

@@ -14,6 +14,7 @@ module ETLTester
 				@source_sql_generator = SqlGenerator.new
 				@target_sql_generator = SqlGenerator.new
 				@mapping_items = []
+				@rows = RowStub.new
 				@pks = []
 				@source_ignored_items, @target_ignored_items = [], []
 				instance_eval &mapping_definiton
@@ -60,6 +61,9 @@ module ETLTester
 			
 			def declare_cte_as sql, alias_name
 				raise UsageError.new("\"#{alias_name}\" is used or protected by ETLTester, please use another alias name.") if respond_to? alias_name.downcase.to_sym
+				if(table_name.downcase.include?("select") && table_name.downcase.include?("from"))
+					table_name = "(#{table_name})"
+				end
 				@source_sql_generator.add_cte sql, alias_name
 				t = CteTable.new(alias_name, @source_sql_generator)
 				(class << self; self; end).class_eval do
@@ -127,6 +131,7 @@ module ETLTester
 					else
 						@mapping_items << {target: args[0], transfrom_logic: args[1]}
 					end
+					@rows.add_key(args[0].column_name.to_s.downcase.to_sym)
 				else
 					raise UsageError.new("Usage of m: m <target column>, <source column> or m <target column>, <block of source transformation>")
 				end
@@ -158,10 +163,17 @@ module ETLTester
 				original_method_missing method_name, *args, &blk
 			end
 
+			def rows
+				@rows
+			end
+
+			alias_method :row, :rows
 
 			def params
 				@params ||= ParameterStub.new
 			end
+
+			alias_method :param, :params
 
 			attr_reader :source_filter, :target_filter
 			def set_source_filter &filter
@@ -174,41 +186,23 @@ module ETLTester
 				instance_eval &filter
 			end
 
-			def define_global_variable variable_name, &how
-				@global_variables ||= {}
-				@fake_global_variables ||= FakeVariableSet.new
-				@global_variables[variable_name] = how
-				@fake_global_variables[variable_name] = VariableStub.new
+			def define_variable variable_name, &how
+				@variables ||= {}
+				@fake_variables ||= FakeVariableSet.new
+				@variables[variable_name] = how
+				@fake_variables[variable_name] = VariableStub.new
 			end
 
-			def global_variables
-				@fake_global_variables ||= FakeVariableSet.new
-				@fake_global_variables
+			def variables
+				@fake_variables ||= FakeVariableSet.new
+				@fake_variables
 			end
 
-			def get_global_variables
-				@global_variables
+			def get_variables
+				@variables
 			end
 
-			def define_row_variable variable_name, &how
-				@row_variables ||= {}
-				@fake_row_variables ||= FakeVariableSet.new
-				@row_variables[variable_name] = how
-				@fake_row_variables[variable_name] = VariableStub.new
-				instance_eval &how
-			end
-
-			def row_variables
-				@fake_row_variables ||= FakeVariableSet.new
-				@fake_row_variables
-			end
-
-			def get_row_variables
-				@row_variables
-			end
-
-			alias_method :global_variable, :global_variables
-			alias_method :row_variable, :row_variables
+			alias_method :variable, :variables
 
 		end
 
@@ -221,12 +215,32 @@ module ETLTester
 
 			def [] key
 				@keys << key if !@keys.include? key
+				VariableStub.new
 			end
 
 			def to_h
 				h = {}
 				@keys.each {|key| h[key] = nil}
 				h
+			end
+
+		end
+
+		class RowStub
+
+			def initialize
+				@keys = []
+			end
+
+			def add_key key
+				key = key.to_s.downcase.to_sym
+				@keys << key if !@keys.include? key
+			end
+
+			def [] key
+				key = key.to_s.downcase.to_sym
+				raise StandError.new "Undefined row[:#{key}]" if !@keys.include? key 
+				VariableStub.new
 			end
 
 		end
