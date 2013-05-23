@@ -65,7 +65,7 @@ LEFT JOIN
     from
         t
 left join
-    ITR22.CMPNT_LFECYCL cl -- This table doesn't exist for now!
+    ITR22.CMPNT_LFECYCL
  on UPPER(cl.CMPNT_TYPE_NM)= 'OS' and cl.CMPNT_VERS_NM = t.VSM_OS_VERS_NM
 
 -- Target
