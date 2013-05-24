@@ -13,15 +13,15 @@ test_mapping = mapping("L3_SRVR_D") do
             'Red'
         else
             sysdate = params[:sysdate].to_time
-            month_between = srvr_d.os_vers_end_of_supp_dt.month_between sysdate
+            month_def = srvr_d.os_vers_end_of_supp_dt.month_between sysdate
             case 
-            when month_between > 24
+            when month_def > 24
                 'Green'
-            when month_between <= 24 && month_between > 12
+            when month_def <= 24 && month_def > 12
                 'Yellow'
-            when month_between <= 12 && month_between > -12
+            when month_def <= 12 && month_def > -12
                 'Red'
-            when month_between <= -12
+            when month_def <= -12
                 'Purple'
             end
         end
