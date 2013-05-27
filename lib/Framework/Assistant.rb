@@ -15,7 +15,10 @@ module ETLTester
 				Dir.mkdir("#{project_dir}/mappings")
 				# Folder used for store config.yaml
 				Dir.mkdir("#{project_dir}/configuration")
-				
+				# Folder used for store config.yaml
+				Dir.mkdir("#{project_dir}/test suites")
+
+
 				# Set default value.
 				File.open("#{project_dir}/configuration/config.yaml", 'w') do |file|
 					file.puts %Q{---
