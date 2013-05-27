@@ -34,6 +34,16 @@ module ETLTester
 				@columns.collect {|column| column + ": " + __send__(column.to_sym).to_s}.join(', ')
 			end
 
+			alias_method :original_method_missing, :method_missing
+			
+			def method_missing method_name, *args, &blk			
+				if respond_to? method_name.to_s.downcase.to_sym 
+					return __send__(method_name.to_s.downcase.to_sym, *args, &blk) 
+				else
+					original_method_missing method_name, *args, &blk
+				end
+			end
+
 			define_blank_methods :inner_join, :left_join, :right_join, :lookup, :link
 
 

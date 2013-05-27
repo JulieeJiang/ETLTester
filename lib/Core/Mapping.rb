@@ -155,6 +155,10 @@ module ETLTester
 			alias_method :left_join, :lookup
 			alias_method :inner_join, :link
 
+			def right_join table, join_condition
+				IntermediateTable.new(@source_sql_generator).right_join table, join_condition
+			end
+
 			alias_method :original_method_missing, :method_missing
 			def method_missing method_name, *args, &blk
 				if args.size == 0 && !block_given?
