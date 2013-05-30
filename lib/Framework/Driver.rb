@@ -5,23 +5,27 @@ module ETLTester
 		# Process mapping.
 		class Driver
 
-			attr_writer :mapping
+			attr_writer :mapping, :report_folder
+
+			def initialize
+				@report_folder ||= Time.now.strftime("%Y%m%d%H%M%S")
+			end
 
 			# report_level: :all display all the result.
 			#				:fail display all the failed result.
 			# 				:summary only generate summary report
-			# 				:smart display 100 failed result.
+			# 				:smart display 200 failed result.
 			def run report_level = :smart
 				@report_level = report_level
 				db_config = Util::Configuration::get_config :DBConnection
 				max_row = Util::Configuration::get_config :MAX_ROW
 				dc = Core::DataContainer.new @mapping, db_config, max_row
 				result = Comparer.new(dc.expected_data, dc.actual_data, @mapping.source_ignored_items, @mapping.target_ignored_items, dc.warning_list).compare
-				generate_report result
+				generate_details result
 			end
 
 			private
-			def generate_report result
+			def generate_details result
 				r = Util::MappingReporter.new
 				
 				summary_header = []
@@ -70,15 +74,17 @@ module ETLTester
 							break if failed_count >= 200
 						end
 						if failed_count >= 200
-								blank_line = ["------"]
-								1.upto(column_count) {blank_line << '---'}
-								r.addData :"expected201", blank_line, :Detail
-								r.addData :"actual201", blank_line, :Detail
+							blank_line = ["------"]
+							1.upto(column_count) {blank_line << '---'}
+							r.addData :"expected201", blank_line, :Detail
+							r.addData :"actual201", blank_line, :Detail
 						end
 					end
 				end
 				
-				r.generate 'Detail_' + Time.now.strftime("%H%M%S"), '.'
+				report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + @report_folder
+				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+				r.generate @mapping.mapping_name + '_' + Time.now.strftime("%H%M%S"), report_dir
 			end
 
 		end

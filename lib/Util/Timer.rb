@@ -9,10 +9,13 @@ module ETLTester
 				if @pre_time.nil?
 					puts "#{@time.strftime("%D-%H:%M:%S")}\t#{description}"
 				else
-					puts "#{@time.strftime("%D-%H:%M:%S")}\t#{description}\tSpend: #{(@time - @pre_time).round(2)} Seconds."
+					@spend_time = (@time - @pre_time).round(2)
+					puts "#{@time.strftime("%D-%H:%M:%S")}\t#{description}\tElapsed: #{@spend_time} Seconds."
 				end
 				@pre_time = Time.now
 			end
+
+			attr_reader :spend_time
 
 		end
 

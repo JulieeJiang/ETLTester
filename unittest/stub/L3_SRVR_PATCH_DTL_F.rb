@@ -122,5 +122,5 @@ mapping("L3_SRVR_PATCH_DTL_F") do
 			end
 		end
 	end
-	
+
 end

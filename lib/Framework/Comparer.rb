@@ -5,8 +5,8 @@ module ETLTester
 		class Comparer
 			
 			def initialize(expected_data, actual_data, source_ignored_items, target_ignored_items, warning_list)
-				$timer = ETLTester::Util::Timer.new if $debug
-				$timer.record "Comparing..." if $debug
+				$timer ||= ETLTester::Util::Timer.new 
+				$timer.record "Comparing..." 
 				@expected_data = expected_data
 				@actual_data = actual_data
 				@source_ignored_items = source_ignored_items
@@ -22,6 +22,7 @@ module ETLTester
 				summary[:Result] = 'Pass'
 				summary[:expected_data_size] = @expected_data.size
 				summary[:actual_data_size] = @actual_data.size
+
 
 				@expected_data.each do |pk, record|
 					summary[:header] ||= record.keys
@@ -85,8 +86,10 @@ module ETLTester
 					end
 				end
 
-				$timer.record "Comparison done..." if $debug
-				return summary, detial, @warning_list
+				summary[:warning] = @warning_list.empty? ? 'No warning' : "Warnings: #{@warning_list.size}, refer to log."
+				$timer.record "Comparison done..." 
+				summary[:elapsed_time] = $timer.spend_time
+				return summary, detial
 			end
 
 		end

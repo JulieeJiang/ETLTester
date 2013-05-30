@@ -1,0 +1,20 @@
+---
+:report_level: :smart
+:mappings:
+- :R01:
+  - :R03:
+    - :R05:
+      - R051 (1).rb
+      - R051 (2).rb
+    - :R04:
+      - R041 (2).rb
+      - R041 (3).rb
+    - R031 (1).rb
+    - R031 (2).rb
+  - test_filter_params.rb
+  - test_params2.rb
+  - test_varaible.rb
+- :R02: []
+- L3_SRVR_D.rb
+- L3_SRVR_PATCH_DTL_F.rb
+- test_params.rb

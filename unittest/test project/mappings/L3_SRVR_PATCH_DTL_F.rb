@@ -1,6 +1,4 @@
-require '../../../lib/etltester'
-
-test_mapping = mapping("L3_SRVR_PATCH_DTL_F") do
+mapping("L3_SRVR_PATCH_DTL_F") do
 
 	declare_target_table 'itr23.SRVR_PATCH_DTL_F', :t
 	declare_source_table "select * from itr23.srvr_d where lgcl_del_fg = 'n'", :srvr_d
@@ -135,11 +133,11 @@ end
 
 # result = ETLTester::Framework::Comparer.new(dc.expected_data, dc.actual_data, test_mapping.source_ignored_items, test_mapping.target_ignored_items, dc.warning_list).compare
 
-ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__)) + '/..'
-driver = ETLTester::Framework::Driver.new
+# ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__)) + '/..'
+# driver = ETLTester::Framework::Driver.new
 
-driver.mapping = test_mapping
-driver.run :smart
+# driver.mapping = test_mapping
+# driver.run :smart
 
 
 

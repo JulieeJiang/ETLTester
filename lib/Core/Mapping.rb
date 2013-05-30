@@ -7,6 +7,10 @@ module ETLTester
 			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
 			attr_reader :source_tables, :params_file, :pks, :source_ignored_items, :target_ignored_items
 			
+			@@mappings = []
+			def self.mappings
+				@@mappings
+			end
 
 			def initialize mapping_name, &mapping_definiton
 				@mapping_name = mapping_name
@@ -279,5 +283,16 @@ end
 
 # Alias for ETLTester::Core::Mapping#new
 def mapping mapping_name, &mapping_definiton
-	ETLTester::Core::Mapping.new mapping_name, &mapping_definiton
+	ETLTester::Core::Mapping.mappings << ETLTester::Core::Mapping.new(mapping_name, &mapping_definiton)
+end
+
+def Dir.mkpath path
+	arr = path.split('/')
+	current_arr = []
+	arr.each do |hierarchy|
+		current_arr << hierarchy
+		if !Dir.exist? current_arr.join('/')
+			Dir.mkdir(current_arr.join('/'))
+		end
+	end
 end

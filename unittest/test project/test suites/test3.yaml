@@ -1,0 +1,5 @@
+---
+:report_level: :smart
+:mappings:
+- L3_SRVR_D.rb
+- L3_SRVR_PATCH_DTL_F.rb

@@ -1,6 +1,7 @@
-require '../../../lib/etltester'
+#require '../../../lib/etltester'
 
-test_mapping = mapping("L3_SRVR_D") do
+#test_mapping = 
+mapping("L3_SRVR_D") do
 
 	declare_target_table 'itr23.srvr_d', 't'
 
@@ -83,8 +84,8 @@ test_mapping = mapping("L3_SRVR_D") do
 
 end
 
-ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__)) + '/..'
-driver = ETLTester::Framework::Driver.new
+# ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__)) + '/..'
+# driver = ETLTester::Framework::Driver.new
 
-driver.mapping = test_mapping
-driver.run :smart
+# driver.mapping = test_mapping
+# driver.run :smart
