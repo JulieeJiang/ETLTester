@@ -18,15 +18,46 @@ module ETLTester
 				end
 			end
 
-			def execute
+			def execute report_folder = Time.now.strftime("%Y%m%d%H%M%S")
 				mapping_list.each do |mapping_file|
 					require mapping_file
 				end
 				driver = ETLTester::Framework::Driver.new
+				driver.report_folder = report_folder
+				
+				report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + report_folder
+				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+				summarys = []	
+				$timer ||= Util::Timer.new
 				ETLTester::Core::Mapping.mappings.each do |mapping|
+					$timer.transaction_start
 					driver.mapping = mapping
-					driver.run @test_suite[:report_level]
+					summary = driver.run @test_suite[:report_level]
+					summary[:mapping_name] = mapping.mapping_name
+					summary[:elapsed] = $timer.transaction_end
+					summarys << summary
 				end
+				r = Util::MappingReporter.new				
+				summary_header = ['Mapping Name']
+				summarys[0].each do |key|
+					if key != :header && key != :mapping_name
+						summary_header << key.to_s.split('_').map(&:capitalize).join(' ')
+					end
+				end
+
+				r.addHeader summary_header, :Summary
+
+				summarys.each_with_index do |summary, idx|
+					content = [summary[:mapping_name]]
+					summary.each do |key, value|
+						if key != :header && key != :mapping_name
+							content << value
+						end 
+					end
+					r.addData :"temp#{idx}", content, :Summary
+				end
+				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+				r.generate 'Summary_' + Time.now.strftime("%H%M%S"), report_dir					
 			end
 
 

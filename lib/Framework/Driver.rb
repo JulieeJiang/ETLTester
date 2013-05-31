@@ -22,26 +22,28 @@ module ETLTester
 				dc = Core::DataContainer.new @mapping, db_config, max_row
 				result = Comparer.new(dc.expected_data, dc.actual_data, @mapping.source_ignored_items, @mapping.target_ignored_items, dc.warning_list).compare
 				generate_details result
+				result[0]
 			end
 
 			private
 			def generate_details result
-				r = Util::MappingReporter.new
 				
-				summary_header = []
-				summary_content = []
-
-				result[0].each do |key, value|
-					if key != :header
-						summary_header << key.to_s.split('_').map(&:capitalize).join(' ')
-						summary_content << value						
+				if @report_level != :smmary					
+					r = Util::MappingReporter.new				
+					summary_header = []
+					summary_content = []
+					result[0].each do |key, value|
+						if key != :header
+							summary_header << key.to_s.split('_').map(&:capitalize).join(' ')
+							summary_content << value
+						end
 					end
-				end
-				
-				r.addHeader summary_header, :Summary
-				r.addData :temp, summary_content, :Summary
-				
-				if @report_level != :smmary
+
+					r.addText "Detail Report: #{@mapping.mapping_name}", ''
+
+					
+					r.addHeader summary_header, :Summary
+					r.addData :temp, summary_content, :Summary
 					
 					r.addHeader ['Result'] + result[0][:header], :Detail
 					if @report_level == :all
@@ -80,11 +82,10 @@ module ETLTester
 							r.addData :"actual201", blank_line, :Detail
 						end
 					end
+					report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + @report_folder + '/details'
+					Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+					r.generate @mapping.mapping_name + '_' + Time.now.strftime("%H%M%S"), report_dir
 				end
-				
-				report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + @report_folder
-				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
-				r.generate @mapping.mapping_name + '_' + Time.now.strftime("%H%M%S"), report_dir
 			end
 
 		end

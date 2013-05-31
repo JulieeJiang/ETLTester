@@ -88,7 +88,6 @@ module ETLTester
 
 				summary[:warning] = @warning_list.empty? ? 'No warning' : "Warnings: #{@warning_list.size}, refer to log."
 				$timer.record "Comparison done..." 
-				summary[:elapsed_time] = $timer.spend_time
 				return summary, detial
 			end
 

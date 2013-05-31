@@ -15,6 +15,17 @@ module ETLTester
 				@pre_time = Time.now
 			end
 
+			def transaction_start
+				raise StandError.new('Some transcation doesn\'t find transcation_end') if !@transaction_start_time.nil?
+				@transaction_start_time = Time.now
+			end
+
+			def transaction_end
+				elapsed_time = (Time.now - @transaction_start_time).round(2)
+				@transcation_start_time = nil
+				elapsed_time
+			end
+
 			attr_reader :spend_time
 
 		end
