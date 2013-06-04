@@ -19,11 +19,14 @@ module ETLTester
 			end
 
 			def execute report_folder = Time.now.strftime("%Y%m%d%H%M%S")
+				Coverage.start
 				mapping_list.each do |mapping_file|
 					require mapping_file
 				end
 				driver = ETLTester::Framework::Driver.new
 				driver.report_folder = report_folder
+				summary_Name = 'Summary_' + Time.now.strftime("%H%M%S")
+				driver.summary_name = summary_Name
 				
 				report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + report_folder
 				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
@@ -53,6 +56,16 @@ module ETLTester
 					summary[:elapsed] = $timer.transaction_end
 					summarys << summary
 				end
+				
+				after = Coverage.result
+				mapping_list.each_with_index do |file,i|
+					mc = ETLTester::Util::MyCover.new file
+					mc.codeStart
+					load file
+					before =  mc.codeResult
+					summarys[i][:coverage] = mc.getLine mc.getBlock before, after
+				end
+			
 				r = Util::MappingReporter.new				
 				summary_header = ['Mapping Name']
 				summarys[0].each_key do |key|
@@ -66,20 +79,44 @@ module ETLTester
 				summarys.each_with_index do |summary, idx|
 					content = [summary[:mapping_name]]
 					summary.each do |key, value|
-						if key != :header && key != :mapping_name && key != :report_name
+						if key != :header && key != :mapping_name && key != :report_name && key != :coverage
 							content << value
-						end 
+						end
+					end
+					if summary[:coverage].length >0 
+						content << 'False'
+						rcover = Util::MappingReporter.new
+					 	rcover.addText "Coverage Report: #{summary[:mapping_name]}", "<a href=../#{summary_Name}.html>Back to Summary</a>"
+					 	rcover.addHeader summary_header, :Summary
+					 	rcover.addData :temp, content, :Summary
+					 	rcover.addHeader ['Target Column','Line','Content'], :Coverage
+					 	i = 0
+					 	summary[:coverage].each do |k,v|
+					 		v.each do |line|
+					 			cover_Content = []
+					 			cover_Content << k
+					 			cover_Content += line
+					 			rcover.addData i, cover_Content, :Coverage
+					 			i += 1
+					 		end		
+					 	end
+						Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+						coverReport_name = "#{summary[:mapping_name]}_Cover" + Time.now.strftime("%H%M%S")
+						rcover.generate coverReport_name, report_dir + '/details'
+					 	link = {1 => "details/#{summary[:report_name]}.html", summary_header.length =>"details/#{coverReport_name}.html"}
+					else
+						content << 'True'
+						link = {1 => "details/#{summary[:report_name]}.html"}
 					end
 					r.addData :"temp#{idx}", content, :Summary
-					r.addLink :"temp#{idx}", {1 => "details/#{summary[:report_name]}.html"},:Summary
+					r.addLink :"temp#{idx}", link,:Summary
 				end
 				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
-				report_name = 'Summary_' + Time.now.strftime("%H%M%S")
-				r.generate report_name, report_dir
+				r.generate summary_Name, report_dir
 				$timer.show_msg "Done: Report folder: #{report_dir}" 
 
 				if $log_flag
-					log_file = Util::Configuration::get_config(:Project_Home) + "/logs/" + report_name + '.log'
+					log_file = Util::Configuration::get_config(:Project_Home) + "/logs/" + summary_Name + '.log'
 					$timer.generate_log log_file
 				end			
 			end
