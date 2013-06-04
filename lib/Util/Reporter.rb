@@ -145,7 +145,7 @@ module ETLTester
 						    <p>&nbsp;</p>
 						    <!-- end .content --></div>
 						  <div class="footer">
-						    <p><span class="foot"> Leave your foot here.</span></p>
+						    <p><span class="foot"><a href='https://github.com/piecehealth/ETLTester'>ETLTester Home: https://github.com/piecehealth/ETLTester</a></span></p>
 						    <!-- end .footer --></div>
 							<!-- end .container --></div>
 						</body>

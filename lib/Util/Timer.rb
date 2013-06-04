@@ -4,13 +4,21 @@ module ETLTester
 
 		class Timer
 
+			def initialize
+				@logs = []
+			end
+
 			def record description
 				@time = Time.now
 				if @pre_time.nil?
-					puts "#{@time.strftime("%D-%H:%M:%S")}\t#{description}"
+					msg = "#{@time.strftime("%D-%H:%M:%S")}\t#{description}"
+					puts msg
+					@logs << msg 
 				else
 					@spend_time = (@time - @pre_time).round(2)
-					puts "#{@time.strftime("%D-%H:%M:%S")}\t#{description}\tElapsed: #{@spend_time} Seconds."
+					msg = "#{@time.strftime("%D-%H:%M:%S")}\t#{description}\tElapsed: #{@spend_time} Seconds."
+					puts msg
+					@logs << msg
 				end
 				@pre_time = Time.now
 			end
@@ -22,8 +30,17 @@ module ETLTester
 
 			def transaction_end
 				elapsed_time = (Time.now - @transaction_start_time).round(2)
-				@transcation_start_time = nil
+				@transaction_start_time = nil
 				elapsed_time
+			end
+
+			def show_msg msg
+				puts msg
+				@logs << msg
+			end
+
+			def generate_log log_file
+				File.open(log_file, 'w') {|f| @logs.each {|log_item| f.puts log_item}}
 			end
 
 			attr_reader :spend_time

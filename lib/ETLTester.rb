@@ -4,7 +4,7 @@
 # Visit https://github.com/piecehealth/ETLTester for more details.
 
 module ETLTester
-	$debug = true
+	$log_flag = true
 end
 
 $LOAD_PATH.unshift(File.dirname(File.realpath(__FILE__))) unless $LOAD_PATH.include?(File.dirname(File.realpath(__FILE__)))

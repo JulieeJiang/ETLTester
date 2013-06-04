@@ -112,23 +112,23 @@ module ETLTester
 			# db_connection	: {type: orcale, address: xxx, user: xxx, password: xxx}
 			# max_row		: Configuration[:MAX_ROW]
 			def initialize mapping, db_connection, max_row
-				$timer = ETLTester::Util::Timer.new if $debug
+				$timer ||= ETLTester::Util::Timer.new
 				
 				@warning_list = []
 
-				$timer.record "Run mapping #{mapping.mapping_name}." if $debug
+				$timer.record "Run mapping #{mapping.mapping_name}."
 
 				# Get Parameters
 				if !mapping.params_file.nil?
 					set_params mapping.params_file
 					params.each_key {|key| raise StandError.new("You must specify value for Parameter: #{key} (Mapping: #{mapping.mapping_name}).") if params[key].nil?}
-					$timer.record "Get parameter." if $debug
+					$timer.record "Get parameter." 
 				end
 				
 				# Get Variables
 				if !mapping.get_variables.nil?
 					set_variables mapping.get_variables
-					$timer.record "Get variables." if $debug
+					$timer.record "Get variables." 
 				end
 
 				@mapping, @db_connection, @max_row = mapping, db_connection, max_row
@@ -136,10 +136,10 @@ module ETLTester
 				# Get @actual_data
 				raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.empty?
 				total_row = set_actual_data
-				$timer.record "Extract actual data from database. #{total_row} records." if $debug
+				$timer.record "Extract actual data from database. #{total_row} records." 
 
 				total_row = set_expected_data
-				$timer.record "Extract expected data from database. #{total_row} records." if $debug
+				$timer.record "Extract expected data from database. #{total_row} records." 
 
 			end
 

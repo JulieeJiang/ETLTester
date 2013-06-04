@@ -27,20 +27,36 @@ module ETLTester
 				
 				report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + report_folder
 				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
+				Dir.mkpath(report_dir + '/details')
+				require 'fileutils'
+
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/css.css', report_dir + '/css.css')
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.jpg', report_dir + '/logo.jpg')
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/css.css', report_dir + '/details/css.css')
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.jpg', report_dir + '/details/logo.jpg')
+
 				summarys = []	
 				$timer ||= Util::Timer.new
 				ETLTester::Core::Mapping.mappings.each do |mapping|
 					$timer.transaction_start
 					driver.mapping = mapping
-					summary = driver.run @test_suite[:report_level]
+					begin
+						summary = driver.run @test_suite[:report_level]
+					rescue
+						summary[:result] = 'Error'
+						summary[:expected_data_size] = $!.message
+						summary[:actual_data_size] = $!.backtrace
+						summary[:warning] = ''
+						$timer.record "Error:" + $!.message + ". \n" + $!.message 
+					end
 					summary[:mapping_name] = mapping.mapping_name
 					summary[:elapsed] = $timer.transaction_end
 					summarys << summary
 				end
 				r = Util::MappingReporter.new				
 				summary_header = ['Mapping Name']
-				summarys[0].each do |key|
-					if key != :header && key != :mapping_name
+				summarys[0].each_key do |key|
+					if key != :header && key != :mapping_name && key != :report_name
 						summary_header << key.to_s.split('_').map(&:capitalize).join(' ')
 					end
 				end
@@ -50,14 +66,22 @@ module ETLTester
 				summarys.each_with_index do |summary, idx|
 					content = [summary[:mapping_name]]
 					summary.each do |key, value|
-						if key != :header && key != :mapping_name
+						if key != :header && key != :mapping_name && key != :report_name
 							content << value
 						end 
 					end
 					r.addData :"temp#{idx}", content, :Summary
+					r.addLink :"temp#{idx}", {1 => "details/#{summary[:report_name]}.html"},:Summary
 				end
 				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
-				r.generate 'Summary_' + Time.now.strftime("%H%M%S"), report_dir					
+				report_name = 'Summary_' + Time.now.strftime("%H%M%S")
+				r.generate report_name, report_dir
+				$timer.show_msg "Done: Report folder: #{report_dir}" 
+
+				if $log_flag
+					log_file = Util::Configuration::get_config(:Project_Home) + "/logs/" + report_name + '.log'
+					$timer.generate_log log_file
+				end			
 			end
 
 

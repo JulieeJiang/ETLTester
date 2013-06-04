@@ -21,8 +21,9 @@ module ETLTester
 				max_row = Util::Configuration::get_config :MAX_ROW
 				dc = Core::DataContainer.new @mapping, db_config, max_row
 				result = Comparer.new(dc.expected_data, dc.actual_data, @mapping.source_ignored_items, @mapping.target_ignored_items, dc.warning_list).compare
-				generate_details result
-				result[0]
+				ret = result[0]
+				ret[:report_name] = generate_details result
+				ret
 			end
 
 			private
@@ -84,7 +85,9 @@ module ETLTester
 					end
 					report_dir = Util::Configuration::get_config(:Project_Home) + '/reports/' + @report_folder + '/details'
 					Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
-					r.generate @mapping.mapping_name + '_' + Time.now.strftime("%H%M%S"), report_dir
+					report_name = @mapping.mapping_name + '_' + Time.now.strftime("%H%M%S")
+					r.generate report_name, report_dir
+					report_name
 				end
 			end
 
