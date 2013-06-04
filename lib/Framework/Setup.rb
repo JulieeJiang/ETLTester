@@ -5,6 +5,9 @@ module ETLTester
 		def self.setup
 			current_folder = Dir.pwd
 			check_folder current_folder
+			if Dir.exist? current_folder + "/extension"
+				Dir.foreach(current_folder + "/extension") {|f| require("/extension/" + f) if f =~ /\.rb$/}
+			end
 		end
 
 		private
