@@ -1,5 +1,5 @@
 # file_list = []
-# lib_dir = "#{__dir__}/lib"
+# lib_dir = "#{File.dirname(File.realpath(__FILE__))}/lib"
 
 # file_list << "lib/ETLTester.rb"
 
@@ -9,7 +9,7 @@
 # 	end
 # end
 
-# puts file_list
+# puts file_list.collect {|file| "'" + file + "'"}.join(",\n")
 
 Gem::Specification.new do |s|
 
@@ -21,18 +21,30 @@ Gem::Specification.new do |s|
 	s.description	= 'Developed by HP GITS-DS-CDC BI Testing team.'
 	s.authors 		= ['HP GITS-DS-CDC BI Testing team']
 	s.email			= 'kang.zhang@hp.com'
-	s.files			= ["lib/ETLTester.rb", 
-						"lib/Core/Column.rb", 
-						"lib/Core/DataContainer.rb", 
-						"lib/Core/Mapping.rb", 
-						"lib/Core/SqlGenerator.rb", 
-						"lib/Core/Table.rb", 
-						"lib/Framework/Assistant.rb", 
-						"lib/Framework/Driver.rb", 
-						"lib/Util/Configuration.rb", 
-						"lib/Util/DBConnection.rb", 
-						"lib/Util/Error.rb",
-						"bin/et"]
+	s.files			= ['lib/ETLTester.rb',
+						'lib/Core/Column.rb',
+						'lib/Core/DataContainer.rb',
+						'lib/Core/Mapping.rb',
+						'lib/Core/SqlGenerator.rb',
+						'lib/Core/Table.rb',
+						'lib/datatype_ext/String.rb',
+						'lib/datatype_ext/Time.rb',
+						'lib/Framework/Assistant.rb',
+						'lib/Framework/cli.rb',
+						'lib/Framework/Comparer.rb',
+						'lib/Framework/Driver.rb',
+						'lib/Framework/Executor.rb',
+						'lib/Framework/Setup.rb',
+						'lib/Util/Configuration.rb',
+						'lib/Util/DBConnection.rb',
+						'lib/Util/Error.rb',
+						'lib/Util/GenTestSuite.rb',
+						'lib/Util/MyCover.rb',
+						'lib/Util/Parameter.rb',
+						'lib/Util/Reporter.rb',
+						'lib/Util/Timer.rb',
+						'resource/CSS.css',
+						'resource/logo.jpg']
 	s.homepage		= 'https://github.com/piecehealth/ETLTester'
 	s.licenses = ["MIT"]
 end

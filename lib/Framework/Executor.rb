@@ -19,8 +19,14 @@ module ETLTester
 			end
 
 			def execute report_folder = Time.now.strftime("%Y%m%d%H%M%S")
+				$run_flag = true
 				mapping_list.each do |mapping_file|
 					require mapping_file
+					current_mapping = Core::Mapping.mappings[Core::Mapping.mappings.size - 1]
+					if !current_mapping.params.nil?
+						params_file = Util::Configuration::get_config(:Project_Home) + mapping_file.gsub(Util::Configuration::get_config(:Project_Home), '').gsub('/mappings/', '/parameters/').gsub(/\.rb$/, '.yaml')
+						current_mapping.params_file = params_file
+					end
 				end
 				driver = ETLTester::Framework::Driver.new
 				driver.report_folder = report_folder
@@ -43,6 +49,7 @@ module ETLTester
 					begin
 						summary = driver.run @test_suite[:report_level]
 					rescue
+						summary ||= {}
 						summary[:result] = 'Error'
 						summary[:expected_data_size] = $!.message
 						summary[:actual_data_size] = $!.backtrace
@@ -71,7 +78,7 @@ module ETLTester
 						end 
 					end
 					r.addData :"temp#{idx}", content, :Summary
-					r.addLink :"temp#{idx}", {1 => "details/#{summary[:report_name]}.html"},:Summary
+					r.addLink :"temp#{idx}", {1 => "details/#{summary[:report_name]}.html"},:Summary if summary[:result] != 'Error'
 				end
 				Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
 				report_name = 'Summary_' + Time.now.strftime("%H%M%S")
@@ -97,7 +104,7 @@ module ETLTester
 				Dir.foreach(dir) do |f|
 					if f != '.' && f != '..'
 						if File.directory?(dir + '/' + f)
-							folder << traverse_dir(dir + '/' + f)
+							folders << traverse_dir(dir + '/' + f)
 						else
 							rb_files << f if f =~ /\.rb$/	
 						end

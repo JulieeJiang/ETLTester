@@ -16,11 +16,11 @@ module ETLTester
 				when 'new'
 					respond_new *args
 				when 'suite'
-					
+					respond_suite *args	
 				when 'test'
-					
+					respond_test *args
 				when 'run'
-				
+					respond_run *args
 				when 'help'
 					puts %Q{---------	ETLTester	---------
 # Argment surrounded by angel brackets means it is mandatory, like <your argment>
@@ -33,14 +33,13 @@ module ETLTester
 # et suite relase21 or et suite
 * Run suite 			: et run [your suite name]
 # et run release 21 or et run
-* Test mappings		: et test <your mapping path>
-# et test 'release 21/some module/mapping1'
 ---------https://github.com/piecehealth/ETLTester---------}
 				else
 					puts "Invaild command #{first_argument}, type 'et help' for help..."
 				end
 			end
 
+			private
 			def respond_new *args
 				if args[0].downcase == 'project'
 					if args[1].nil?
@@ -69,8 +68,34 @@ module ETLTester
 				end
 			end
 
+			def respond_suite *args
+				msg = check_work_space
+				if msg.empty?
+					suite_name = args[0]
+					suite_name ||= "test_suite_#{Time.now.strftime("%Y%m%d%H%M%S")}"
+					Framework::setup
+					Util::GenTestSuite::generateTestSuite suite_name, Util::Configuration.get_config(:Project_Home), {:report_level=>:smart}
+					puts "Successful: new test suite: #{@current_folder}/test suites/#{mapping_folder}/#{suite_name}"
+				else
+					puts msg
+				end
+			end
 
-			private
+			def respond_run *args
+				msg = check_work_space
+				if msg.empty?
+					Framework::setup
+					if args[0].nil?
+						executor = Framework::Executor.new
+					else
+						executor = Framework::Executor.new args[0]
+					end
+					executor.execute
+				else
+					puts msg
+				end
+			end
+
 			def check_work_space
 				msg = ''
 				if Dir.exist? @current_folder + "/configuration"

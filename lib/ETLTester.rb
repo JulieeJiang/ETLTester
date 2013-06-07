@@ -5,6 +5,7 @@
 
 module ETLTester
 	$log_flag = true
+	$run_flag = false
 end
 
 $LOAD_PATH.unshift(File.dirname(File.realpath(__FILE__))) unless $LOAD_PATH.include?(File.dirname(File.realpath(__FILE__)))

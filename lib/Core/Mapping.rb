@@ -5,7 +5,8 @@ module ETLTester
 		class Mapping
 			
 			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
-			attr_reader :source_tables, :params_file, :pks, :source_ignored_items, :target_ignored_items
+			attr_reader :source_tables, :pks, :source_ignored_items, :target_ignored_items, :params
+			attr_accessor :params_file
 			
 			@@mappings = []
 			def self.mappings
@@ -23,29 +24,31 @@ module ETLTester
 				@source_ignored_items, @target_ignored_items = [], []
 				instance_eval &mapping_definiton
 				if !@params.nil?
-					arr = Dir.pwd.split('/mappings')
-					if arr.size == 1
-						suffix_dir = arr[0]
-						prefix_dir = ''	
-					else
-						prefix_dir = arr.last
-						arr.delete_at(arr.size - 1)
-						suffix_dir = arr.join('/mappings')
-					end
-					params_folder = suffix_dir + '/parameters' + prefix_dir
-					Dir.mkdir(params_folder) if !Dir.exist?(params_folder)
-					require 'yaml'
-					if File.exist?(params_folder + "/#{mapping_name}.yaml")
-						existed_params = File.open(params_folder + "/#{mapping_name}.yaml") {|f| YAML::load(f)}
-						if existed_params.keys != @params.to_h.keys
-							File.open(params_folder + "/#{mapping_name}.yaml", 'w') {|f| f.puts @params.to_h.to_yaml}	
+					if !$run_flag
+						arr = Dir.pwd.split('/mappings')
+						if arr.size == 1
+							suffix_dir = arr[0]
+							prefix_dir = ''	
+						else
+							prefix_dir = arr.last
+							arr.delete_at(arr.size - 1)
+							suffix_dir = arr.join('/mappings')
 						end
-					else
-						File.open(params_folder + "/#{mapping_name}.yaml", 'w') do |f|
-							f.puts @params.to_h.to_yaml
+						params_folder = suffix_dir + '/parameters' + prefix_dir
+						Dir.mkpath(params_folder) if !Dir.exist?(params_folder)
+						require 'yaml'
+						if File.exist?(params_folder + "/#{File.basename($0).gsub('.rb', '')}.yaml")
+							existed_params = File.open(params_folder + "/#{File.basename($0).gsub('.rb', '')}.yaml") {|f| YAML::load(f)}
+							if existed_params.keys != @params.to_h.keys
+								File.open(params_folder + "/#{File.basename($0).gsub('.rb', '')}.yaml", 'w') {|f| f.puts @params.to_h.to_yaml}	
+							end
+						else
+							File.open(params_folder + "/#{File.basename($0).gsub('.rb', '')}.yaml", 'w') do |f|
+								f.puts @params.to_h.to_yaml
+							end
 						end
+						@params_file = params_folder + "/#{File.basename($0).gsub('.rb', '')}.yaml"
 					end
-					@params_file = params_folder + "/#{mapping_name}.yaml"
 				end
 			end
 			
