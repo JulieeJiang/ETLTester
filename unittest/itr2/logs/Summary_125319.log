@@ -1,6 +1,0 @@
-06/06/13-12:53:15	Run mapping L3_SRVR_D.
-06/06/13-12:53:15	Get parameter.	Elapsed: 0.0 Seconds.
-06/06/13-12:53:19	Get variables.	Elapsed: 3.62 Seconds.
-06/06/13-12:53:19	Error:undefined method `downcase' for nil:NilClass. 
-undefined method `downcase' for nil:NilClass	Elapsed: 0.0 Seconds.
-Done: Report folder: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/itr2/reports/20130606125315

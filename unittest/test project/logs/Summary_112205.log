@@ -1,6 +1,0 @@
-06/07/13-11:21:31	Run mapping L3_SRVR_D.
-06/07/13-11:21:35	Get variables.	Elapsed: 3.57 Seconds.
-06/07/13-11:21:56	Extract actual data from database. 85351 records.	Elapsed: 21.15 Seconds.
-06/07/13-11:22:05	Error:undefined method `[]' for nil:NilClass. 
-undefined method `[]' for nil:NilClass	Elapsed: 8.69 Seconds.
-Done: Report folder: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project/reports/20130607112131
