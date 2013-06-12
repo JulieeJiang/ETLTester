@@ -1,0 +1,12 @@
+06/09/13-20:50:55	Run mapping L3_SRVR_D.
+06/09/13-20:51:01	Get variables.	Elapsed: 6.34 Seconds.
+06/09/13-20:52:01	Extract actual data from database. 86105 records.	Elapsed: 59.69 Seconds.
+06/09/13-20:54:44	Extract expected data from database. 86105 records.	Elapsed: 163.2 Seconds.
+06/09/13-20:54:44	Comparing...	Elapsed: 0.0 Seconds.
+06/09/13-20:54:48	Comparison done...	Elapsed: 4.5 Seconds.
+06/09/13-20:54:48	Run mapping L3_SRVR_PATCH_DTL_F.	Elapsed: 0.04 Seconds.
+06/09/13-20:54:55	Extract actual data from database. 30 records.	Elapsed: 6.54 Seconds.
+06/09/13-20:55:13	Extract expected data from database. 30 records.	Elapsed: 18.18 Seconds.
+06/09/13-20:55:13	Comparing...	Elapsed: 0.0 Seconds.
+06/09/13-20:55:13	Comparison done...	Elapsed: 0.0 Seconds.
+Done: Report folder: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project/reports/20130609205054

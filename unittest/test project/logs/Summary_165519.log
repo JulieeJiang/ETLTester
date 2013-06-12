@@ -1,0 +1,11 @@
+06/09/13-16:55:19	Run mapping L3_SRVR_D.
+06/09/13-16:55:19	Get parameter.	Elapsed: 0.0 Seconds.
+06/09/13-16:55:28	Get variables.	Elapsed: 8.51 Seconds.
+06/09/13-16:56:20	Extract actual data from database. 86105 records.	Elapsed: 51.95 Seconds.
+06/09/13-16:59:40	Extract expected data from database. 86105 records.	Elapsed: 200.44 Seconds.
+06/09/13-16:59:40	Comparing...	Elapsed: 0.0 Seconds.
+06/09/13-16:59:44	Comparison done...	Elapsed: 3.68 Seconds.
+06/09/13-16:59:44	Run mapping L3_SRVR_PATCH_DTL_F.	Elapsed: 0.03 Seconds.
+06/09/13-16:59:44	Error:No such file or directory - C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project/parameters/L3_SRVR_PATCH_DTL_F.yaml. 
+No such file or directory - C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project/parameters/L3_SRVR_PATCH_DTL_F.yaml	Elapsed: 0.0 Seconds.
+Done: Report folder: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project/reports/20130609165519

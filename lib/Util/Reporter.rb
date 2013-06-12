@@ -80,13 +80,13 @@ module ETLTester
 						<style type="text/css">
 						.container .content table {
 							font-family: "HP Simplified", "HPFutura Book", "HPFutura Heavy";
-									<img src="logo.jpg" alt="" name="Insert_logo" id="Insert_logo" style="background-color: #C6D580; display:block;" />
-							}
+						}
 						</style>
 						<title>#{report_name}</title>
 						<body>
 						<div style='float:right'>
-								<a href="https://github.com/piecehealth/ETLTester">
+							<a href="https://github.com/piecehealth/ETLTester">
+								<img src="logo.jpg" alt="" name="Insert_logo" id="Insert_logo" style="background-color: #C6D580; display:block;" />
 							</a>
 							</div>
 						<div class="container" >

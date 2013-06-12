@@ -75,7 +75,7 @@ module ETLTester
 					suite_name ||= "test_suite_#{Time.now.strftime("%Y%m%d%H%M%S")}"
 					Framework::setup
 					Util::GenTestSuite::generateTestSuite suite_name, Util::Configuration.get_config(:Project_Home), {:report_level=>:smart}
-					puts "Successful: new test suite: #{@current_folder}/test suites/#{mapping_folder}/#{suite_name}"
+					puts "Successful: new test suite: #{@current_folder}/test suites/#{suite_name}"
 				else
 					puts msg
 				end

@@ -5,7 +5,7 @@ module ETLTester
 		# Process mapping.
 		class Driver
 
-			attr_writer :mapping, :report_folder
+			attr_writer :mapping, :report_folder,:summary_name
 
 			def initialize
 				@report_folder ||= Time.now.strftime("%Y%m%d%H%M%S")
@@ -40,9 +40,8 @@ module ETLTester
 						end
 					end
 
-					r.addText "Detail Report: #{@mapping.mapping_name}", ''
+					r.addText "Detail Report: #{@mapping.mapping_name}", "<a href=../#{@summary_name}.html>Back to Summary</a>"
 
-					
 					r.addHeader summary_header, :Summary
 					r.addData :temp, summary_content, :Summary
 					
