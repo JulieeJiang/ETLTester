@@ -70,7 +70,7 @@ module ETLTester
 					mc.codeStart
 					load file
 					before =  mc.codeResult
-					summarys[i][:coverage] = mc.getLine mc.getBlock before, after
+					summarys[i][:coverage] = mc.getLineByMap mc.getBlock before, after
 				end
 			
 				r = Util::MappingReporter.new				
@@ -90,20 +90,27 @@ module ETLTester
 							content << value
 						end
 					end
-					if summary[:coverage].length >0 
-						content << 'False'
+					if summary[:coverage][:coveragePer] < 100 
+						content << summary[:coverage][:coveragePer].to_s+'%'
 						rcover = Util::MappingReporter.new
 					 	rcover.addText "Coverage Report: #{summary[:mapping_name]}", "<a href=../#{summary_Name}.html>Back to Summary</a>"
 					 	rcover.addHeader summary_header, :Summary
 					 	rcover.addData :temp, content, :Summary
-					 	rcover.addHeader ['Target Column','Line','Content'], :Coverage
+
+					 	rcover.addHeader ['Target Column','Total Branch','Covered Branch','Coverage Ratio'], :Coverage
+					 	summary[:coverage][:coverage].each do |item|
+					 		item[3] = item[3].to_s + '%'
+					 		rcover.addData item[0],item,:Coverage
+					 	end
+
+					 	rcover.addHeader ['Target Column','Line','Content'], :Detail
 					 	i = 0
-					 	summary[:coverage].each do |k,v|
+					 	summary[:coverage][:coverageDetail].each do |k,v|
 					 		v.each do |line|
 					 			cover_Content = []
 					 			cover_Content << k
 					 			cover_Content += line
-					 			rcover.addData i, cover_Content, :Coverage
+					 			rcover.addData i, cover_Content, :Detail
 					 			i += 1
 					 		end		
 					 	end
@@ -112,7 +119,7 @@ module ETLTester
 						rcover.generate coverReport_name, report_dir + '/details'
 					 	link = {1 => "details/#{summary[:report_name]}.html", summary_header.length =>"details/#{coverReport_name}.html"}
 					else
-						content << 'True'
+						content << '100%'
 						link = {1 => "details/#{summary[:report_name]}.html"}
 					end
 					r.addData :"temp#{idx}", content, :Summary
