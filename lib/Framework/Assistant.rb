@@ -7,7 +7,7 @@ module ETLTester
 			# Create a new ETL testing project by given path
 			def self.new_project project_name, path
 				path = "#{path}/" if path !~ /\/^$/
-				project_dir = "#{path}#{project_name}"
+				project_dir = "#{path}#{project_name}".gsub('//', '/')
 				raise StandError.new("#{project_dir} is already existed.") if Dir.exist?(project_dir)
 				Dir.mkdir("#{project_dir}")
 

@@ -46,7 +46,7 @@ module ETLTester
 						puts "You must specify a project name."
 					else
 						Framework::Assistant::new_project args[1], @current_folder
-						puts "Successful: new test project: #{@current_folder}/#{args[1]}"
+						puts "Successful: new test project: #{@current_folder.gsub(/\/$/, '')}/#{args[1]}"
 					end
 				end
 				if args[0].downcase == 'mapping'
