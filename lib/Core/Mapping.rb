@@ -5,8 +5,8 @@ module ETLTester
 		class Mapping
 			
 			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
-			attr_reader :source_tables, :pks, :source_ignored_items, :target_ignored_items, :params
-			attr_accessor :params_file
+			attr_reader :source_tables, :pks, :params
+			attr_accessor :params_file, :source_ignored_items, :target_ignored_items
 			
 			@@mappings = []
 			def self.mappings

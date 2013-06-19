@@ -29,8 +29,7 @@ mapping("L3_SRVR_D") do
 	end
 
     define_variable :exception_list do
-        exceptions = ETLTester::Util::DBConnection::get_data_from_db({type: :oracle, address: "ITR2ITG_DEDICATED", user: "infr", password: "INFR_INFR_2011.bb"},
-         %Q{
+        exceptions = Util::Configration::get_config :db_connections, %Q{
             SELECT EXCPN_SRVR_NM_LIST_TX 
             FROM ITR23.EXCPN_EXITS_D
             WHERE STD_NM= 'Operating System' 

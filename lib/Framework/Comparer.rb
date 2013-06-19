@@ -27,12 +27,15 @@ module ETLTester
 				@expected_data.each do |pk, record|
 					summary[:header] ||= record.keys
 					skip_flag = false
-					@source_ignored_items.each do |k, v|
+					@source_ignored_items.each do |item| 
 						skip_flag = true
-						if record[k] != v
-							skip_flag = false
-							break
+						item.each do |k, v|
+							if record[k] != v
+								skip_flag = false
+								break
+							end
 						end
+						break if skip_flag
 					end
 					# Ignored items
 					if skip_flag
@@ -61,12 +64,15 @@ module ETLTester
 				end
 				(@actual_data.keys - used_pks).each do |pk|
 					skip_flag = false
-					@target_ignored_items.each do |k, v|
+					@target_ignored_items.each do |item|
 						skip_flag = true
-						if @actual_data[pk][k] != v
-							skip_flag = false
-							break
+						item.each do |k, v|
+							if record[k] != v
+								skip_flag = false
+								break
+							end
 						end
+						break if skip_flag
 					end
 					# Ignored items
 					if skip_flag
