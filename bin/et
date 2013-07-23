@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'etltester'
+
+cli = ETLTester::Framework::Cli.new
+cli.respond *$*

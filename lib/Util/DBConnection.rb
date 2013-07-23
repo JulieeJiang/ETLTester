@@ -4,40 +4,65 @@ module ETLTester
 		
 		module DBConnection
 
-			# Return a array of hash for the sql_txt.
+			# Return a array the sql_txt.
 			# You should install proper database driver.
-			# e.g. if db_type is oracle, you should install dbi and ruby-oci8 first.
-			def self.get_data_from_db db_type, config, sql_txt
+			# e.g. if db_type is oracle, you should install ruby-oci8 first.
+			def self.get_data_from_db config, sql_txt
 
-				case type = db_type.downcase.to_sym
+				case type = config[:type].downcase.to_sym
 					when :oracle
-						require 'dbi'
 						begin
-							dbh = DBI.connect("DBI:OCI8:#{config[:tns]}", config[:user_name], config[:password])
-							rs = dbh.prepare sql_txt
-							rs.execute
-							records = []
-							rs.fetch_all.each do |r| 
-								record = r.to_h
-								# Convert data type.
-								record.each do |column_name, value|
-									if value.class == BigDecimal
-										if value.to_i == value
-											record[column_name] = value.to_i
-										end
+							require 'oci8'
+						rescue LoadError
+							raise StandError.new('Install ruby-oci8 first.(gem install ruby-oci8)')
+						end
+						oci = OCI8.new(config[:user], config[:password], config[:address])
+						oci.prefetch_rows = 15000
+						records = []
+						require 'bigdecimal'
+						oci.exec(sql_txt) do |record|
+							records << record.collect do |i|
+								if i.kind_of? BigDecimal
+									if i.to_i == i
+										next i.to_i
 									end
 								end
-								records << record
-							end 
-
-							records
-						ensure
-							dbh.disconnect unless dbh.nil?
+								i
+							end
 						end
+						return records						
 					else
 						raise UnsupportError.new("Don't support #{type} so far.")
-				end
-						
+				end			
+
+			end
+
+			def self.get_transformed_data config, sql_txt, &transformation
+
+				case type = config[:type].downcase.to_sym
+					when :oracle
+						begin
+							require 'oci8'
+						rescue LoadError
+							raise StandError.new('Install ruby-oci8 first.(gem install ruby-oci8)')
+						end
+						oci = OCI8.new(config[:user], config[:password], config[:address])
+						require 'bigdecimal'
+						oci.prefetch_rows = 15000
+						oci.exec(sql_txt) do |record|
+							# Convert data type.
+							yield(record.collect do |i|
+								if i.kind_of? BigDecimal
+									if i.to_i == i
+										next i.to_i
+									end
+								end
+								i
+							end)
+						end					
+					else
+						raise UnsupportError.new("Don't support #{type} so far.")
+				end			
 
 			end
 			

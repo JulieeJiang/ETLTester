@@ -1,0 +1,6 @@
+---
+:report_level: :smart
+:mappings:
+- :release22:
+  - :server path mgmt:
+    - l3_srvr_d.rb

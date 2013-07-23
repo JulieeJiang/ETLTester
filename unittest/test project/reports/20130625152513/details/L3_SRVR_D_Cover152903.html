@@ -1,0 +1,278 @@
+
+					<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+						<html xmlns="http://www.w3.org/1999/xhtml">
+						<head>
+						<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+						<link href="CSS.css" rel="stylesheet" type="text/css">
+						<style type="text/css">
+						.container .content table {
+							font-family: "HP Simplified", "HPFutura Book", "HPFutura Heavy";
+						}
+						</style>
+						<title>L3_SRVR_D_Cover152903</title>
+						<body>
+						<div style='float:right'>
+							<a href="https://github.com/piecehealth/ETLTester">
+								<img src="logo.jpg" alt="" name="Insert_logo" id="Insert_logo" style="background-color: #C6D580; display:block;" />
+							</a>
+							</div>
+						<div class="container" >
+							
+						  <div class="content">
+	 	 				
+
+	 	 					<h1>Coverage Report: L3_SRVR_D</h1>
+	 	 					<h5><a href=../Summary_152513.html>Back to Summary</a></h5>
+	 	 					
+
+						    <h1>Summary</h1>
+						       <table  class="table" style="margin:5px">
+						    	<tr class="tableheader">
+						    
+	    		
+						    		   <th>Mapping Name</th>
+						    	
+	    		
+						    		   <th>Result</th>
+						    	
+	    		
+						    		   <th>Expected Data Size</th>
+						    	
+	    		
+						    		   <th>Actual Data Size</th>
+						    	
+	    		
+						    		   <th>Warning</th>
+						    	
+	    		
+						    		   <th>Elapsed</th>
+						    	
+	    		
+						    		   <th>Coverage</th>
+						    	
+	    		
+						    		</tr>
+						    		<tr>
+						    	
+
+										<td class="tdcss2">L3_SRVR_D</td>		
+										
+
+										<td class="tdcss2">Fail</td>		
+										
+
+										<td class="tdcss2">86105</td>		
+										
+
+										<td class="tdcss2">86105</td>		
+										
+
+										<td class="tdcss2">No warning</td>		
+										
+
+										<td class="tdcss2">182.72</td>		
+										
+
+										<td class="tdcss2">74%</td>		
+										
+
+								</tr>
+								
+
+	  							</table>
+						
+
+						    <h1>Coverage</h1>
+						       <table  class="table" style="margin:5px">
+						    	<tr class="tableheader">
+						    
+	    		
+						    		   <th>Target Column</th>
+						    	
+	    		
+						    		   <th>Total Branch</th>
+						    	
+	    		
+						    		   <th>Covered Branch</th>
+						    	
+	    		
+						    		   <th>Coverage Ratio</th>
+						    	
+	    		
+						    		</tr>
+						    		<tr>
+						    	
+
+										<td class="tdcss2">t.os_vers_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss2">5</td>		
+										
+
+										<td class="tdcss2">1</td>		
+										
+
+										<td class="tdcss2">20%</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss1">t.os_patch_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss1">4</td>		
+										
+
+										<td class="tdcss1">4</td>		
+										
+
+										<td class="tdcss1">100%</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss2">t.os_vers_cmplnc_fg</td>		
+										
+
+										<td class="tdcss2">2</td>		
+										
+
+										<td class="tdcss2">1</td>		
+										
+
+										<td class="tdcss2">50%</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss1">t.os_patch_cmplnc_fg</td>		
+										
+
+										<td class="tdcss1">2</td>		
+										
+
+										<td class="tdcss1">2</td>		
+										
+
+										<td class="tdcss1">100%</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss2">t.os_vers_end_of_supp_dt</td>		
+										
+
+										<td class="tdcss2">1</td>		
+										
+
+										<td class="tdcss2">1</td>		
+										
+
+										<td class="tdcss2">100%</td>		
+										
+
+								</tr>
+								
+
+	  							</table>
+						
+
+						    <h1>Detail</h1>
+						       <table  class="table" style="margin:5px">
+						    	<tr class="tableheader">
+						    
+	    		
+						    		   <th>Target Column</th>
+						    	
+	    		
+						    		   <th>Line</th>
+						    	
+	    		
+						    		   <th>Content</th>
+						    	
+	    		
+						    		</tr>
+						    		<tr>
+						    	
+
+										<td class="tdcss2">t.os_vers_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss2">19</td>		
+										
+
+										<td class="tdcss2">            when month_def > 24
+</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss1">t.os_vers_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss1">21</td>		
+										
+
+										<td class="tdcss1">            when month_def <= 24 && month_def > 12
+</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss2">t.os_vers_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss2">23</td>		
+										
+
+										<td class="tdcss2">            when month_def <= 12 && month_def > -12
+</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss1">t.os_vers_cmplnc_stat_nm</td>		
+										
+
+										<td class="tdcss1">25</td>		
+										
+
+										<td class="tdcss1">            when month_def <= -12
+</td>		
+										
+
+								</tr>
+								
+
+										<td class="tdcss2">t.os_vers_cmplnc_fg</td>		
+										
+
+										<td class="tdcss2">60</td>		
+										
+
+										<td class="tdcss2">        if ['Green', 'Yellow'].include? row[:os_vers_cmplnc_stat_nm]
+</td>		
+										
+
+								</tr>
+								
+
+	  							</table>
+						
+
+						    <p>&nbsp;</p>
+						    <!-- end .content --></div>
+						  <div class="footer">
+						    <p><span class="foot"><a href='https://github.com/piecehealth/ETLTester'>ETLTester Home: https://github.com/piecehealth/ETLTester</a></span></p>
+						    <!-- end .footer --></div>
+							<!-- end .container --></div>
+						</body>
+						</html>
+					

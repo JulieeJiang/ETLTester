@@ -9,23 +9,27 @@ module ETLTester
 				@@project_path = path
 			end
 			
-			def self.load_config config_name
-				get_configuration if @@configuration.nil?
+			def self.get_config config_name
+				load_config if !class_variable_defined?(:@@configuration)
 				@@configuration[config_name]
 			end
 
-			def self.set_config config_name, config_body
-				get_configuration if @@configuration.nil?
-				@@configuration[config_name] = config_body
-				File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
-					f.puts @@configuration.to_yaml
-				end
-			end
+			# def self.set_config config_name, config_body
+			# 	load_config if !class_variable_defined?(:@@configuration)
+			# 	@@configuration[config_name] = config_body
+			# 	File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
+			# 		f.puts @@configuration.to_yaml
+			# 	end
+			# end
 			
 			private
-			def self.get_configuration
-				File.open("#{@@project_path}/configuration/config.yaml", 'w') do |f|
-					@@configuration = YAML::load(f)
+			def self.load_config
+				File.open("#{@@project_path}/configuration/config.yaml") do |f|
+					if f.size == 0
+						@@configuration ||= {}
+					else	
+						@@configuration = YAML::load(f)
+					end
 				end
 			end
 			
