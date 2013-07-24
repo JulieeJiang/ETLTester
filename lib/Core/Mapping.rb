@@ -7,6 +7,7 @@ module ETLTester
 			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
 			attr_reader :source_tables, :pks, :params
 			attr_accessor :params_file, :source_ignored_items, :target_ignored_items
+			attr_accessor :source_db_connection, :target_db_connect
 			
 			@@mappings = []
 			def self.mappings
@@ -22,6 +23,7 @@ module ETLTester
 				@rows = RowStub.new
 				@pks = []
 				@source_ignored_items, @target_ignored_items = [], []
+				@source_db_connection, @target_db_connect = :DBConnection, :DBConnection # Default
 				instance_eval &mapping_definiton
 				if !@params.nil?
 					if !$run_flag

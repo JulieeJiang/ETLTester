@@ -111,7 +111,7 @@ module ETLTester
 			# mapping 		: instance of ETLTester::Core::Mapping
 			# db_connection	: {type: orcale, address: xxx, user: xxx, password: xxx}
 			# max_row		: Configuration[:MAX_ROW]
-			def initialize mapping, db_connection, max_row
+			def initialize mapping, source_db_connection, target_db_connection, max_row
 				$timer ||= ETLTester::Util::Timer.new
 				
 				@warning_list = []
@@ -130,9 +130,8 @@ module ETLTester
 					set_variables mapping.get_variables
 					$timer.record "Get variables." 
 				end
-
-				@mapping, @db_connection, @max_row = mapping, db_connection, max_row
-
+				@mapping, @max_row = mapping, db_connection, max_row
+				@source_db_connection, @target_db_connection = source_db_connection, target_db_connection
 				# Get @actual_data
 				raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.empty?
 				total_row = set_actual_data
@@ -154,11 +153,11 @@ module ETLTester
 					count_sql = @mapping.target_sql_generator.generate_count_sql + " where " + (instance_eval &@mapping.target_filter)
 				end
 				
-				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
+				total_row = Util::DBConnection.get_data_from_db(@target_db_connection, count_sql)[0][0]
 				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
 				
 				@actual_data = {}
-				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|
+				Util::DBConnection.get_transformed_data(@target_db_connection, sql_stmt) do |record|
 					k = {}
 					actual_record = {}
 					record.each_with_index do |value, idx| 
@@ -194,10 +193,10 @@ module ETLTester
 					sql_stmt = @mapping.source_sql_generator.generate_sql + " where " + (instance_eval &@mapping.source_filter)
 					count_sql = @mapping.source_sql_generator.generate_count_sql + " where " + (instance_eval &@mapping.source_filter)
 				end
-				total_row = Util::DBConnection.get_data_from_db(@db_connection, count_sql)[0][0]
+				total_row = Util::DBConnection.get_data_from_db(@source_db_connection, count_sql)[0][0]
 				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
 				@expected_data = {}
-				Util::DBConnection.get_transformed_data(@db_connection, sql_stmt) do |record|					
+				Util::DBConnection.get_transformed_data(@source_db_connection, sql_stmt) do |record|					
 					new_row = {}
 					row.each {|k, v| new_row[k] = v.clone}
 					record.each_with_index {|v, idx| new_row[select_orders[idx][0]].__send__(:"#{select_orders[idx][1]}=", v)}

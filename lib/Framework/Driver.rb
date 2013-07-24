@@ -17,9 +17,10 @@ module ETLTester
 			# 				:smart display 200 failed result.
 			def run report_level = :smart
 				@report_level = report_level
-				db_config = Util::Configuration::get_config :DBConnection
+				source_db_connection = Util::Configuration::get_config @mapping.source_db_config
+				target_db_connection = Util::Configuration::get_config @mapping.target_db_config
 				max_row = Util::Configuration::get_config :MAX_ROW
-				dc = Core::DataContainer.new @mapping, db_config, max_row
+				dc = Core::DataContainer.new @mapping, source_db_connection, target_db_config, max_row
 				result = Comparer.new(dc.expected_data, dc.actual_data, @mapping.source_ignored_items, @mapping.target_ignored_items, dc.warning_list).compare
 				ret = result[0]
 				ret[:report_name] = generate_details result
