@@ -1,6 +1,6 @@
 ---
 # Project path
-:Project_Home: C:/Users/zhangkan/Documents/GitHub/ETLTester/unittest/test project
+:Project_Home: C:/GitHub/ETLTester/unittest/test project
 # The max amount of sql returns.
 :MAX_ROW: 200000
 # How to connect database

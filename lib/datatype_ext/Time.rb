@@ -29,5 +29,3 @@ class Time
 	end
 
 end
-
-puts Time.now.yesterday
