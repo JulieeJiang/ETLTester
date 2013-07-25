@@ -7,6 +7,9 @@ mapping("L3_SRVR_D") do
 
 	declare_source_table 'itr23.srvr_d', 'srvr_d'
 
+    source_db_connection = :connection1
+    target_db_connection = :connection1
+
 	mp t.srvr_ky, srvr_d.srvr_ky
 	
 	m t.os_vers_cmplnc_stat_nm do

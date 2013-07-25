@@ -24,7 +24,7 @@ module ETLTester
 				mapping_list.each do |mapping_file|
 					require mapping_file
 					current_mapping = Core::Mapping.mappings[Core::Mapping.mappings.size - 1]
-					if !current_mapping.params_file.nil?
+					if current_mapping.params_flag
 						params_file = Util::Configuration::get_config(:Project_Home) + mapping_file.gsub(Util::Configuration::get_config(:Project_Home), '').gsub('/mappings/', '/parameters/').gsub(/\.rb$/, '.yaml')
 						current_mapping.params_file = params_file
 					end
@@ -57,7 +57,7 @@ module ETLTester
 						summary[:expected_data_size] = $!.message
 						summary[:actual_data_size] = $!.backtrace
 						summary[:warning] = ''
-						$timer.record "Error:" + $!.message + ". \n" + $!.message 
+						$timer.record "Error:" + $!.message + ". \n" + $!.backtrace.join("\n") 
 					end
 					summary[:mapping_name] = mapping.mapping_name
 					summary[:elapsed] = $timer.transaction_end

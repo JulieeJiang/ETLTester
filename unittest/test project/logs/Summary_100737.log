@@ -1,0 +1,5 @@
+07/25/13-10:07:37	Error:undefined local variable or method `target_db_config' for #<ETLTester::Framework::Driver:0x2476260>. 
+undefined local variable or method `target_db_config' for #<ETLTester::Framework::Driver:0x2476260>
+07/25/13-10:07:37	Error:undefined local variable or method `target_db_config' for #<ETLTester::Framework::Driver:0x2476260>. 
+undefined local variable or method `target_db_config' for #<ETLTester::Framework::Driver:0x2476260>	Elapsed: 0.01 Seconds.
+Done: Report folder: C:/GitHub/ETLTester/unittest/test project/reports/20130725100737

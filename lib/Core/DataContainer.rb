@@ -130,7 +130,7 @@ module ETLTester
 					set_variables mapping.get_variables
 					$timer.record "Get variables." 
 				end
-				@mapping, @max_row = mapping, db_connection, max_row
+				@mapping, @max_row = mapping, max_row
 				@source_db_connection, @target_db_connection = source_db_connection, target_db_connection
 				# Get @actual_data
 				raise StandError.new "You should specify pks(Usage: mp target.column, source.column) within mapping #{@mapping.mapping_name}" if @mapping.pks.empty?
@@ -152,7 +152,6 @@ module ETLTester
 					sql_stmt = @mapping.target_sql_generator.generate_sql + " where " + (instance_eval &@mapping.target_filter)
 					count_sql = @mapping.target_sql_generator.generate_count_sql + " where " + (instance_eval &@mapping.target_filter)
 				end
-				
 				total_row = Util::DBConnection.get_data_from_db(@target_db_connection, count_sql)[0][0]
 				raise StandError.new("Total row number(#{total_row}) is bigger the max row number(#{@max_row}). Try to limit your returns or change MAX_ROW in configuration.yaml") if @max_row < total_row
 				
@@ -229,7 +228,8 @@ module ETLTester
 
 			def set_variables variables
 				@variables = {}
-				variables.each {|key, value| @variables[key] = value.call}
+				# variables.each {|key, value| @variables[key] = value.call}
+				variables.each {|key, value| @variables[key] = instance_eval &value}
 			end
 
 			def variables

@@ -14,7 +14,7 @@
 Gem::Specification.new do |s|
 
 	s.name			= 'ETLTester'
-	s.version		= '1.0.2' 
+	s.version		= '1.1.3' 
 	s.executables 	= ['et'] 
 	s.date			= '2013-06-25'
 	s.summary		= 'A unittest framework for ETL testing.'
