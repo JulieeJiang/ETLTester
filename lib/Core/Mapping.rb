@@ -7,7 +7,7 @@ module ETLTester
 			attr_reader :mapping_name, :source_sql_generator, :target_sql_generator, :mapping_items
 			attr_reader :source_tables, :pks, :params, :params_flag
 			attr_accessor :params_file, :source_ignored_items, :target_ignored_items
-			attr_accessor :source_db_connection, :target_db_connection
+			attr_reader :source_db_connection, :target_db_connection
 			
 			@@mappings = []
 			def self.mappings
@@ -86,6 +86,9 @@ module ETLTester
 
 			def declare_target_table table_name, alias_name
 				raise UsageError.new("\"#{alias_name}\" is used or protected by ETLTester, please use another alias name.") if respond_to? alias_name.downcase.to_sym
+				if(table_name.downcase.include?("select") && table_name.downcase.include?("from"))
+					table_name = "(#{table_name})"
+				end
 				t = Table.new(table_name, alias_name, @target_sql_generator)
 				(class << self; self; end).class_eval do
 					define_method alias_name.downcase.to_sym do
@@ -217,6 +220,14 @@ module ETLTester
 			end
 
 			alias_method :variable, :variables
+
+			def set_source_connection connection
+				@source_db_connection = connection
+			end
+
+			def set_target_connection connection
+				@target_db_connection = connection
+			end
 
 		end
 

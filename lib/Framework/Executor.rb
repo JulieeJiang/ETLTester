@@ -66,7 +66,7 @@ module ETLTester
 				
 				after = Coverage.result
 				mapping_list.each_with_index do |file,i|
-					mc = ETLTester::Util::MyCover.new file
+					mc = ETLTester::Util::MyCover.new file.gsub('\\', '/')
 					mc.codeStart
 					load file
 					before =  mc.codeResult
