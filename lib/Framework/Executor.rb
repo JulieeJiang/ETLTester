@@ -20,7 +20,6 @@ module ETLTester
 
 			def execute report_folder = Time.now.strftime("%Y%m%d%H%M%S")
 				$run_flag = true
-				Coverage.start
 				mapping_list.each do |mapping_file|
 					require mapping_file
 					current_mapping = Core::Mapping.mappings[Core::Mapping.mappings.size - 1]
@@ -64,15 +63,6 @@ module ETLTester
 					summarys << summary
 				end
 				
-				after = Coverage.result
-				mapping_list.each_with_index do |file,i|
-					mc = ETLTester::Util::MyCover.new file.gsub('\\', '/')
-					mc.codeStart
-					load file
-					before =  mc.codeResult
-					summarys[i][:coverage] = mc.getLineByMap mc.getBlock before, after
-				end
-			
 				r = Util::MappingReporter.new				
 				summary_header = ['Mapping Name']
 				summarys[0].each_key do |key|
@@ -86,42 +76,11 @@ module ETLTester
 				summarys.each_with_index do |summary, idx|
 					content = [summary[:mapping_name]]
 					summary.each do |key, value|
-						if key != :header && key != :mapping_name && key != :report_name && key != :coverage
+						if key != :header && key != :mapping_name && key != :report_name
 							content << value
 						end
-					end
-					if summary[:coverage][:coveragePer] < 100 
-						content << summary[:coverage][:coveragePer].to_s+'%'
-						rcover = Util::MappingReporter.new
-					 	rcover.addText "Coverage Report: #{summary[:mapping_name]}", "<a href=../#{summary_Name}.html>Back to Summary</a>"
-					 	rcover.addHeader summary_header, :Summary
-					 	rcover.addData :temp, content, :Summary
-
-					 	rcover.addHeader ['Target Column','Total Branch','Covered Branch','Coverage Ratio'], :Coverage
-					 	summary[:coverage][:coverage].each do |item|
-					 		item[3] = item[3].to_s + '%'
-					 		rcover.addData item[0],item,:Coverage
-					 	end
-
-					 	rcover.addHeader ['Target Column','Line','Content'], :Detail
-					 	i = 0
-					 	summary[:coverage][:coverageDetail].each do |k,v|
-					 		v.each do |line|
-					 			cover_Content = []
-					 			cover_Content << k
-					 			cover_Content += line
-					 			rcover.addData i, cover_Content, :Detail
-					 			i += 1
-					 		end		
-					 	end
-						Dir.mkpath(report_dir) if !Dir.exist?(report_dir)
-						coverReport_name = "#{summary[:mapping_name]}_Cover" + Time.now.strftime("%H%M%S")
-						rcover.generate coverReport_name, report_dir + '/details'
-					 	link = {1 => "details/#{summary[:report_name]}.html", summary_header.length =>"details/#{coverReport_name}.html"}
-					else
-						content << '100%'
-						link = {1 => "details/#{summary[:report_name]}.html"}
-					end
+					end					
+					link = {1 => "details/#{summary[:report_name]}.html"}
 					r.addData :"temp#{idx}", content, :Summary
 					r.addLink :"temp#{idx}", link,:Summary
 				end

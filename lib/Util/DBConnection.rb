@@ -68,6 +68,7 @@ module ETLTester
 									next i.to_i
 								end
 							end
+							next DBNil.new if i.nil?
 							i
 						end)
 					end					
@@ -81,7 +82,7 @@ module ETLTester
 					client = TinyTds::Client.new config
 					begin
 						client.execute(sql_txt).to_a.map(&:values).each do |record|
-							yield record
+							yield record.map {|col| col.nil? ? DBNil.new : col}
 						end
 					ensure
 						client.close
@@ -92,6 +93,51 @@ module ETLTester
 
 			end
 			
+			class DBNil
+				
+				def nil?
+					true
+				end
+				
+				alias_method :original_method_missing, :method_missing
+				
+				def method_missing method_name, *args, &blk
+					require 'date'
+					case 
+					when String.instance_methods.include?(method_name)
+						add_method method_name
+						DBNil.new
+					when Fixnum.instance_methods.include?(method_name)
+						add_method method_name
+						DBNil.new
+					when Float.instance_methods.include?(method_name)
+						add_method method_name
+						DBNil.new
+					when Time.instance_methods.include?(method_name)
+						add_method method_name
+						DBNil.new
+					when Date.instance_methods.include?(method_name)
+						add_method method_name
+						DBNil.new
+					else
+						original_method_missing method_name, *args, &blk
+					end
+				end
+
+				def to_s
+					'NULL in DB'
+				end
+				
+				private
+				def add_method method_name
+					self.class.class_eval do
+						define_method method_name do |*args, &blk|
+							return self.class.new
+						end
+					end
+				end
+			end
+
 		end
 		
 	end

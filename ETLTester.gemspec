@@ -14,9 +14,9 @@
 Gem::Specification.new do |s|
 
 	s.name			= 'ETLTester'
-	s.version		= '1.1.4' 
+	s.version		= '1.1.7' 
 	s.executables 	= ['et'] 
-	s.date			= '2013-06-25'
+	s.date			= '2013-07-29'
 	s.summary		= 'A unittest framework for ETL testing.'
 	s.description	= 'Developed by HP GITS-DS-CDC BI Testing team.'
 	s.authors 		= ['HP GITS-DS-CDC BI Testing team']
@@ -39,7 +39,6 @@ Gem::Specification.new do |s|
 						'lib/Util/DBConnection.rb',
 						'lib/Util/Error.rb',
 						'lib/Util/GenTestSuite.rb',
-						'lib/Util/MyCover.rb',
 						'lib/Util/Parameter.rb',
 						'lib/Util/Reporter.rb',
 						'lib/Util/Timer.rb',
