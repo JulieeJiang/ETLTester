@@ -55,6 +55,13 @@ module ETLTester
 						next
 					else
 						ret = (record.values + @actual_data[pk].values) << (record == @actual_data[pk])
+						# if !ret.last
+						# 	puts "Result:"
+						# 	record.each do |k, v|
+						# 		puts "Expected #{k}: #{v}, #{v.class}"
+						# 		puts "Actual #{k}: #{@actual_data[pk][k]}, #{@actual_data[pk][k].class}"
+						# 	end
+						# end
 						summary[:Result] = 'Fail' if !ret.last
 						detial << ret
 						used_pks << pk

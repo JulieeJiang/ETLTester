@@ -82,7 +82,7 @@ module ETLTester
 					client = TinyTds::Client.new config
 					begin
 						client.execute(sql_txt).to_a.map(&:values).each do |record|
-							yield record.map {|col| col.nil? ? DBNil.new : col}
+							yield(record.map {|col| col.nil? ? DBNil.new : col})
 						end
 					ensure
 						client.close
@@ -99,6 +99,15 @@ module ETLTester
 					true
 				end
 				
+				def == obj
+					if obj == nil
+						true
+					else
+						false
+					end
+				end
+
+
 				alias_method :original_method_missing, :method_missing
 				
 				def method_missing method_name, *args, &blk
@@ -125,7 +134,7 @@ module ETLTester
 				end
 
 				def to_s
-					'NULL in DB'
+					'<NULL in DB>'
 				end
 				
 				private
