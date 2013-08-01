@@ -1,0 +1,9 @@
+---
+:report_level: :smart
+:mappings:
+- ALM_Mapping.rb
+- QUIX_Component_Mapping.rb
+- QUIX_HW_Mapping.rb
+- QUIX_HW_VSB_Mapping.rb
+- QUIX_MPP_Mapping.rb
+- StoreAll_Mapping.rb
