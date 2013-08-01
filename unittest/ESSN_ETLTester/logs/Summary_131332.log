@@ -1,0 +1,17 @@
+08/01/13-13:13:32	Run mapping ALM_Mapping.
+08/01/13-13:13:39	Extract actual data from database. 8307 records.	Elapsed: 6.88 Seconds.
+08/01/13-13:13:44	Error:ORA-00907: missing right parenthesis. 
+stmt.c:253:in oci8lib_191.so
+C:/Ruby193/lib/ruby/gems/1.9.1/gems/ruby-oci8-2.1.2-x86-mingw32/lib/oci8/oci8.rb:474:in `exec'
+C:/Ruby193/lib/ruby/gems/1.9.1/gems/ruby-oci8-2.1.2-x86-mingw32/lib/oci8/oci8.rb:282:in `exec_internal'
+C:/Ruby193/lib/ruby/gems/1.9.1/gems/ruby-oci8-2.1.2-x86-mingw32/lib/oci8/oci8.rb:275:in `exec'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Util/DBConnection.rb:22:in `get_data_from_db'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Core/DataContainer.rb:195:in `set_expected_data'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Core/DataContainer.rb:140:in `initialize'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Framework/Driver.rb:23:in `new'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Framework/Driver.rb:23:in `run'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Framework/Executor.rb:52:in `block in execute'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Framework/Executor.rb:48:in `each'
+C:/GitHub/ETLTester (GitHub for Windows)/lib/Framework/Executor.rb:48:in `execute'
+C:/GitHub/ETLTester (GitHub for Windows)/unittest/ESSN_ETLTester/test_executor.rb:8:in `<main>'	Elapsed: 5.63 Seconds.
+Done: Report folder: C:/GitHub/ETLTester (GitHub for Windows)/unittest/ESSN_ETLTester/reports/20130801131330

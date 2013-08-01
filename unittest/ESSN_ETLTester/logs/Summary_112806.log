@@ -1,0 +1,6 @@
+08/01/13-11:28:06	Run mapping ALM_Mapping.
+08/01/13-11:28:15	Extract actual data from database. 8307 records.	Elapsed: 8.3 Seconds.
+08/01/13-11:29:09	Extract expected data from database. 8307 records.	Elapsed: 54.47 Seconds.
+08/01/13-11:29:09	Comparing...	Elapsed: 0.0 Seconds.
+08/01/13-11:29:09	Comparison done...	Elapsed: 0.21 Seconds.
+Done: Report folder: C:/Users/zhangkan/Desktop/ESSN_ETLTester/reports/20130801112806

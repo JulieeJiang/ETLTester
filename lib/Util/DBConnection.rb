@@ -115,19 +115,19 @@ module ETLTester
 					case 
 					when String.instance_methods.include?(method_name)
 						add_method method_name
-						DBNil.new
+						self
 					when Fixnum.instance_methods.include?(method_name)
 						add_method method_name
-						DBNil.new
+						self
 					when Float.instance_methods.include?(method_name)
 						add_method method_name
-						DBNil.new
+						self
 					when Time.instance_methods.include?(method_name)
 						add_method method_name
-						DBNil.new
+						self
 					when Date.instance_methods.include?(method_name)
 						add_method method_name
-						DBNil.new
+						self
 					else
 						original_method_missing method_name, *args, &blk
 					end

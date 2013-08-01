@@ -1,0 +1,40 @@
+---
+# Project path
+:Project_Home: C:/GitHub/ETLTester (GitHub for Windows)/unittest/ESSN_ETLTester
+# The max amount of sql returns.
+:MAX_ROW: 200000
+# How to connect database
+:DBConnection:
+  #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db
+  :type: sql_server
+  :username: qmconvrpt
+  :password: cnvrgd_01118_dwh
+  :host: g9w0118.americas.hpqcorp.net
+  :port: 2048 
+  :database: cnvrgd_dwh_d
+:oracle_ALM_connection:
+  #	Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db
+  :type: oracle
+  #	Database address
+  :address: ALM.PRO
+  #	User for login Database
+  :user: qmreport
+  #	Password for above user.
+  :password: QMrep0rt0920!
+:oracle_QUIX_connection:
+  # Database type: e.g. oracle, sqlserver, teradata... refer to ETLTester::Util::DBConnection::get_data_from_db
+  :type: oracle
+  # Database address
+  :address: QUIX.PRO
+  # User for login Database
+  :user: QUIX
+  # Password for above user.
+  :password: QXRPT1301f#P
+:oracle_Bugzilla_connection:
+  :type: oracle
+  :host: gvu4112.atlanta.hp.com
+  :port: 1525
+  # User for login Database
+  :user: bugs
+  # Password for above user.
+  :password: Happy2_manuka

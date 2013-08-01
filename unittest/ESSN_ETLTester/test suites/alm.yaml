@@ -1,0 +1,4 @@
+---
+:report_level: :smart
+:mappings:
+- ALM_Mapping.rb

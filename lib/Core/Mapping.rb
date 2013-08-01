@@ -68,6 +68,14 @@ module ETLTester
 					end
 				end
 			end
+
+			def declare_dynamic_source_table alias_name, &blk
+				if $run_flag
+					declare_source_table(instance_eval(&blk), alias_name)
+				else
+					declare_source_table "placeholder_#{alias_name}", alias_name
+				end
+			end
 			
 			def declare_cte_as sql, alias_name
 				raise UsageError.new("\"#{alias_name}\" is used or protected by ETLTester, please use another alias name.") if respond_to? alias_name.downcase.to_sym
