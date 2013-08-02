@@ -1,6 +1,3 @@
-#require '../../../../../lib/etltester'
-
-#test_mapping = 
 mapping("L3_SRVR_D") do
 
 	declare_target_table 'itr23.srvr_d', 't'

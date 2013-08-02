@@ -131,6 +131,7 @@ mapping('Demo') do
         end
     end
 
+    # Get the mapping values from excel.
     define_variable :found_in_step do
         map = {}
         variables[:mapping_doc].select {|r| r["ESSN Column Name"] == 'FoundInStep'}.each {|r| map[r['SRC Value']] = r['ESSN Value']}
@@ -138,7 +139,7 @@ mapping('Demo') do
     end
 
     m target.foundinstep do
-        if variable[:found_in_step][bug.bg_user_05].nil?
+        if variable[:found_in_step][bug.bg_user_05].nil? 
             bug.bg_user_05.nil? ? '' : bug.bg_user_05
         else
             variable[:found_in_step][bug.bg_user_05]

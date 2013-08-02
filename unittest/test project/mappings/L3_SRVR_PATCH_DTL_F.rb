@@ -122,40 +122,5 @@ mapping("L3_SRVR_PATCH_DTL_F") do
 			end
 		end
 	end
-
-	set_source_filter {"rownum <= 30 order by 1"}
-	set_target_filter {"rownum <= 30 order by 1"}
-
+	
 end
-
-# dc = ETLTester::Core::DataContainer.new test_mapping, 
-# 	{type: :oracle, address: "ITR2ITG_DEDICATED", user: "infr", password: "INFR_INFR_2011.bb"}, 200000
-
-# result = ETLTester::Framework::Comparer.new(dc.expected_data, dc.actual_data, test_mapping.source_ignored_items, test_mapping.target_ignored_items, dc.warning_list).compare
-
-# ETLTester::Util::Configuration.set_project_path File.dirname(File.realpath(__FILE__)) + '/..'
-# driver = ETLTester::Framework::Driver.new
-
-# driver.mapping = test_mapping
-# driver.run :smart
-
-
-
-# puts result[0][:header]
-# puts result[1].select {|ret| !ret.last}
-
-# dc.actual_data.each do |record|
-# 	puts record
-# end
-
-# dc.expected_data.each do |record|
-# 	puts record
-# end
-
-
-# dc.expected_data.each_with_index do |value, i|
-# 	puts "Expected:"
-# 	puts value
-# 	puts "Actual:"
-# 	puts dc.actual_data[i]
-# end
