@@ -1,0 +1,71 @@
+body {
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+	background-color: #E6F3F9;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	background-color: white;
+}
+
+/* ~~ Element/tag selectors ~~ */
+ul, ol, dl { /* Due to variations between browsers, it's best practices to zero padding and margin on lists. For consistency, you can either specify the amounts you want here, or on the list items (LI, DT, DD) they contain. Remember that what you do here will cascade to the .nav list unless you write a more specific selector. */
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+a img {
+	border: none;
+}
+a:link {
+	color: #42413C;
+	text-decoration: underline;
+}
+a:visited {
+	color: #6E6C64;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus {
+	text-decoration: none;
+}
+.container {
+	background-color: #FFF;
+	margin: auto; /* the auto value on the sides, coupled with the width, centers the layout */
+	display:inline-block;
+}
+.content {
+	padding: 15px;
+	display:inline-block;
+}
+.header {
+	background-color: #000000;
+}/* ~~ The footer ~~ */
+.footer {
+	padding: 3px 0;
+	/* background-color: #000000; */
+}
+.foot {
+	color: #FFF;
+	font-size: x-small;
+}
+.tableheader {
+	color: #FFF;
+	background-color: #036;
+}
+.tdcss1  {
+	background-color: #97DDFF;
+	font-size: small;
+}  
+.tdcss2  {  
+	background-color:  #ffffff;
+	font-size: small; 
+} 
+table{
+border-collapse:collapse;border-spacing:0;border-left:1px solid #888;border-top:1px solid #888; 
+}
+th,td{
+border-right:1px solid #888;border-bottom:1px solid #888;padding:5px 15px;
+}

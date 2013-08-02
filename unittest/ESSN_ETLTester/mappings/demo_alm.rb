@@ -32,7 +32,7 @@ mapping('Demo') do
     end
 
     define_variable :mapping_doc do # Read data from Excel
-        excel_path = (ETLTester::Util::Configuration::get_config(:Project_Home) + "/doc/2013 07 30_HPN Workflow_Mapping to GF_2013_v4.xlsx").gsub "/", "\\"
+        excel_path = (ETLTester::Util::Configuration::get_config(:Project_Home) + "/reference/2013 07 30_HPN Workflow_Mapping to GF_2013_v4.xlsx").gsub "/", "\\"
         parse_excel(excel_path, 2)
     end 
 
@@ -94,12 +94,40 @@ mapping('Demo') do
 
     m target.customerencountered do
         case
-            when bug.bg_user_template_02 =='Y'
+            when bug.bg_user_template_02 == 'Y'
                 'Y'
-            when bug.bg_user_template_02 =='N'
+            when bug.bg_user_template_02 == 'N'
                 'N'
             else
                 ' '
+        end
+    end
+
+    define_variable :state do
+        map = {}
+        variables[:mapping_doc].select {|r| r["ESSN Column Name"] == 'State'}.each {|r| map[r['SRC Value']] = r['ESSN Value'] if r['SRC Label'].split('/').size == 2}
+        map        
+    end
+
+    m target.state do
+        bug_field = "#{bug.bg_status} / #{bug.bg_user_03.nil? ? 'null' : bug.bg_user_03}"
+        bug.bg_user_07 # declare column.
+        if variables[:state][bug_field].nil?
+            if bug.bg_user_07 != 'Fixed'
+                if bug_field == 'Closed / Closed' or bug_field == 'Closed / null'
+                    'Closed no Change'
+                else
+                    'No mapping rule!'
+                end
+            else
+                if bug_field == 'Closed / null'
+                    'Closed no Change'
+                else
+                    'No mapping rule!'
+                end
+            end
+        else
+            variables[:state][bug_field]
         end
     end
 
@@ -116,6 +144,5 @@ mapping('Demo') do
             variable[:found_in_step][bug.bg_user_05]
         end        
     end
-
 
 end
