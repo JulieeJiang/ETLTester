@@ -1,11 +1,10 @@
 mapping("L3_SRVR_PATCH_DTL_F") do
 
-	declare_target_table 'itr23.SRVR_PATCH_DTL_F', :t
 	declare_source_table "select * from itr23.srvr_d where lgcl_del_fg = 'n'", :srvr_d
+	declare_target_table 'itr23.SRVR_PATCH_DTL_F', :t	
 	
-
 	mp t.srvr_ky, srvr_d.srvr_ky
-	
+
 	m t.it_asset_asgn_grp_org_hier_ky do 
 		declare_source_table 'itr23.ASGN_GRP_ORG_HIER_D', :lkp_asset_org
 		declare_source_table 'itr22.CI', :ci

@@ -39,9 +39,9 @@ module ETLTester
 				require 'fileutils'
 
 				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/css.css', report_dir + '/css.css')
-				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.jpg', report_dir + '/logo.jpg')
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.png', report_dir + '/logo.png')
 				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/css.css', report_dir + '/details/css.css')
-				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.jpg', report_dir + '/details/logo.jpg')
+				FileUtils.copy_file(File.dirname(File.realpath(__FILE__)) + '/../../resource/logo.png', report_dir + '/details/logo.png')
 
 				summarys = []	
 				$timer ||= Util::Timer.new

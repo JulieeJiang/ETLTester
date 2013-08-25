@@ -1,14 +1,8 @@
-#require '../../../lib/etltester'
-
-#test_mapping = 
 mapping("L3_SRVR_D") do
 
 	declare_target_table 'itr23.srvr_d', 't'
 
 	declare_source_table 'itr23.srvr_d', 'srvr_d'
-
-    set_source_connection :connection1
-    set_target_connection :connection1
 
 	mp t.srvr_ky, srvr_d.srvr_ky
 	

@@ -1,0 +1,8 @@
+08/25/13-11:29:01	Run mapping L3_SRVR_D.
+08/25/13-11:29:01	Get parameter.	Elapsed: 0.03 Seconds.
+08/25/13-11:29:20	Get variables.	Elapsed: 19.17 Seconds.
+08/25/13-11:30:29	Extract actual data from database. 88920 records.	Elapsed: 68.92 Seconds.
+08/25/13-11:32:52	Extract expected data from database. 88920 records.	Elapsed: 142.91 Seconds.
+08/25/13-11:32:52	Comparing...	Elapsed: 0.0 Seconds.
+08/25/13-11:32:57	Comparison done...	Elapsed: 4.57 Seconds.
+Done: Report folder: C:/GitHub/ETLTester (GitHub for Windows)/unittest/test project/reports/20130825112901

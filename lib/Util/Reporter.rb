@@ -86,7 +86,7 @@ module ETLTester
 						<body>
 						<div style='float:right'>
 							<a href="https://github.com/piecehealth/ETLTester">
-								<img src="logo.jpg" alt="" name="Insert_logo" id="Insert_logo" style="background-color: #C6D580; display:block;" />
+								<img src="logo.png" alt="" name="Insert_logo" id="Insert_logo" style="background-color: #C6D580; display:block;" />
 							</a>
 							</div>
 						<div class="container" >
