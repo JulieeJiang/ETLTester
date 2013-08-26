@@ -1,7 +1,0 @@
-08/02/13-16:09:41	Run mapping Demo.
-08/02/13-16:09:47	Get variables.	Elapsed: 5.71 Seconds.
-08/02/13-16:09:50	Extract actual data from database. 8325 records.	Elapsed: 3.86 Seconds.
-08/02/13-16:10:52	Extract expected data from database. 8325 records.	Elapsed: 61.72 Seconds.
-08/02/13-16:10:52	Comparing...	Elapsed: 0.0 Seconds.
-08/02/13-16:10:52	Comparison done...	Elapsed: 0.18 Seconds.
-Done: Report folder: C:/GitHub/ETLTester (GitHub for Windows)/unittest/ESSN_ETLTester/reports/20130802160939
